@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.Net;
@@ -14,9 +13,6 @@ namespace MeTwo.Server
     {
         public static Program Singleton { get; } = new Program();
 
-        public IPAddress LocalIP { get; private set; }
-        public int WebPort { get; } = 80;
-        public int TcpPort { get; } = 5000;
         private TcpClient tcp;
         private TcpListener listener;
         private WebSocket ws;
@@ -25,18 +21,9 @@ namespace MeTwo.Server
         {
         }
 
-        public void Init()
+        private void Listen(IPAddress ip, int port)
         {
-            var ips = Dns.GetHostAddressesAsync(Dns.GetHostName());
-            ips.Wait();
-            LocalIP = ips.Result.First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-
-            Listen();
-        }
-
-        private void Listen()
-        {
-            listener = new TcpListener(LocalIP, TcpPort);
+            listener = new TcpListener(ip, port);
             listener.Start();
 
             Task.Run(async () =>
@@ -72,20 +59,29 @@ namespace MeTwo.Server
 
         public static void Main(string[] args)
         {
-            try
+            if (args.Length < 2)
             {
-                Singleton.Init();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
+                Console.WriteLine("Usage: dotnet run ip port");
                 return;
             }
 
+            if (!IPAddress.TryParse(args[0], out IPAddress ip))
+            {
+                Console.WriteLine("Invalid IP");
+                return;
+            }
+            if (!int.TryParse(args[1], out int port))
+            {
+                Console.WriteLine("Invalid port");
+                return;
+            }
+
+            Singleton.Listen(ip, port);
+
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls($"http://{Singleton.LocalIP}:{Singleton.WebPort}")
-                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls($"http://{ip}:80")
+                .UseContentRoot(Directory.GetParent(Directory.GetCurrentDirectory()).ToString())
                 .UseStartup<Startup>()
                 .Build();
 
