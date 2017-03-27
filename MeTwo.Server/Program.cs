@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using System.Net;
@@ -59,29 +58,11 @@ namespace MeTwo.Server
 
         public static void Main(string[] args)
         {
-            if (args.Length < 2)
-            {
-                Console.WriteLine("Usage: dotnet run ip port");
-                return;
-            }
-
-            if (!IPAddress.TryParse(args[0], out IPAddress ip))
-            {
-                Console.WriteLine("Invalid IP");
-                return;
-            }
-            if (!int.TryParse(args[1], out int port))
-            {
-                Console.WriteLine("Invalid port");
-                return;
-            }
-
-            Singleton.Listen(ip, port);
+            Singleton.Listen(IPAddress.Parse("0.0.0.0"), 5000);
 
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls($"http://{ip}:80")
-                .UseContentRoot(Directory.GetParent(Directory.GetCurrentDirectory()).ToString())
+                .UseUrls($"http://127.0.0.1:5001")
                 .UseStartup<Startup>()
                 .Build();
 

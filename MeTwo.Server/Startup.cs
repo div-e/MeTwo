@@ -7,21 +7,21 @@ namespace MeTwo.Server
         public void Configure(IApplicationBuilder app)
         {
             app.UseWebSockets();
-
-            app.Use(async (context, next) =>
+            app.Map("/control", appb =>
             {
-                if (context.WebSockets.IsWebSocketRequest)
+                appb.Use(async (context, next) =>
                 {
-                    await Program.Singleton.HandleWebSocket(await context.WebSockets.AcceptWebSocketAsync());
-                }
-                else
-                {
-                    await next();
-                }
+                    if (context.WebSockets.IsWebSocketRequest)
+                    {
+                        await Program.Singleton.HandleWebSocket(await context.WebSockets.AcceptWebSocketAsync());
+                    }
+                    else
+                    {
+                        await next();
+                    }
+                });
             });
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
         }
     }
 }

@@ -11,7 +11,7 @@ const STOP_T = new Uint8Array([6]).buffer;
 connect();
 
 function connect() {
-    ws = new WebSocket("ws://" + window.location.host);
+    ws = new WebSocket("ws://" + window.location.host + "/control");
     ws.binaryType = "arraybuffer";
 
     window.onkeydown = keyDownHandler;
