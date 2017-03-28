@@ -212,7 +212,7 @@ def left():
         motorA_02_state = GPIO.HIGH
         motorB_01_state = GPIO.LOW
         motorB_02_state = GPIO.HIGH
-        dc_pwmA = dc_inc
+        dc_pwmA = dc_inc * 2
         dc_pwmB = dc_min
         updateMotors()
     
@@ -254,7 +254,7 @@ def right():
         motorB_01_state = GPIO.LOW
         motorB_02_state = GPIO.HIGH
         dc_pwmA = dc_min
-        dc_pwmB = dc_inc
+        dc_pwmB = dc_inc * 2
         updateMotors()
 
 ##################### STOPPING METHODS ####################
