@@ -2,28 +2,32 @@
 This repository contains the remote control system of the robot.
 
 ## Structure
-- MeTwo.Server contains the server side code written in C#.
+- server/ contains the server side code written in javascript.
 - wwwroot contains the web frontend code.
 - RobotClient contains the python client running on the robot.
 
 ## Usage
 ### 1. Clone this repo
 
-### 2. Start the server
-- Please make sure you have .NET Core SDK installed.
-- cd to MeTwo.Server
-- dotnet run ip port
-- ip is the server ip address, port is the port for TCP connection with the robot.
+### 2. Set up nginx
+- Make sure nginx is running
+- sudo ./dist.sh
+- This script will copy the front end code to the correct directory and reload nginx
 
-### 3. Start the robot client
+### 3. Start the websocket server
+- Please make sure you have node.js installed
+- cd to server/
+- node index.js
+
+### 4. Start the robot client
 - Please use python 3.6
 - cd to RobotClient
-- python3.6 client.py ip port
-- ip is the server ip address, port is the port for TCP connection with the robot.
+- python3.6 client.py ip
+- ip is the server ip address
+
+### 5. Open a browser and navigate to the server address
 
 ## TODO
-- Implement the robot client functions
 - Authenticate connections
-- Real-time video streaming
 - Auto-recover from exceptions
 - Better UI
