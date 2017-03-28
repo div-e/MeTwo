@@ -286,20 +286,12 @@ def stop_turning():
     global lastCall
 
     if lastCall == FORWARD: 
-        motorA_01_state = GPIO.LOW
-        motorA_02_state = GPIO.HIGH
-        motorB_01_state = GPIO.LOW
-        motorB_02_state = GPIO.HIGH
+        forward()
     elif lastCall == BACKWARD:
-        motorA_01_state = GPIO.HIGH
-        motorA_02_state = GPIO.LOW
-        motorB_01_state = GPIO.HIGH
-        motorB_02_state = GPIO.LOW
+        backward()
+    else: 
+        stop()
         
-    dc_pwmA = last_dc_pwmA
-    dc_pwmB = last_dc_pwmB
-
-    updateMotors()
 
 # Cleans up pins and pinmodes. Call init() again to start again. 
 def terminate(): 
@@ -311,6 +303,16 @@ def terminate():
 
 # Helper method to update the pins to the set global variables
 def updateMotors(): 
+    global dc_pwmA
+    global dc_pwmB
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
     pwmA.ChangeDutyCycle(dc_pwmA)
     pwmB.ChangeDutyCycle(dc_pwmB)
 
