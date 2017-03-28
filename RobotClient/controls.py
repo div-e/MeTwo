@@ -198,23 +198,28 @@ def left():
     global lastCall
 
     if lastCall == BACKWARD: 
-        motorA_01_state = GPIO.HIGH
-        motorA_02_state = GPIO.LOW
-        motorB_01_state = GPIO.HIGH
-        motorB_02_state = GPIO.LOW
+        backward()
+        dc_pwmA = dc_speed_inc + dc_inc
+        dc_pwmB = dc_speed_inc - dc_inc
+        updateMotors()
+    elif lastCall == FORWARD: 
+        forward()
+        dc_pwmA = dc_speed_inc + dc_inc
+        dc_pwmB = dc_speed_inc - dc_inc
+        updateMotors()
     else: 
         motorA_01_state = GPIO.LOW
         motorA_02_state = GPIO.HIGH
         motorB_01_state = GPIO.LOW
         motorB_02_state = GPIO.HIGH
+        dc_pwmA = dc_inc
+        dc_pwmB = dc_min
+        updateMotors()
     
     #if dc_pwmA + dc_inc <= dc_max: 
         #dc_pwmA += dc_inc
     #else:
-    dc_pwmA = dc_speed_inc + dc_inc
-    dc_pwmB = dc_speed_inc - dc_inc
-
-    updateMotors()
+    
 
 # turning RIGHT means moving motor B faster than motor A 
 def right():
@@ -234,25 +239,23 @@ def right():
     global lastCall
 
     if lastCall == BACKWARD: 
-        motorA_01_state = GPIO.HIGH
-        motorA_02_state = GPIO.LOW
-        motorB_01_state = GPIO.HIGH
-        motorB_02_state = GPIO.LOW
+        backward()
+        dc_pwmA = dc_speed_inc - dc_inc
+        dc_pwmB = dc_speed_inc + dc_inc
+        updateMotors()
+    elif lastCall == FORWARD: 
+        forward()
+        dc_pwmA = dc_speed_inc - dc_inc
+        dc_pwmB = dc_speed_inc + dc_inc
+        updateMotors()
     else: 
         motorA_01_state = GPIO.LOW
         motorA_02_state = GPIO.HIGH
         motorB_01_state = GPIO.LOW
         motorB_02_state = GPIO.HIGH
-    '''if dc_pwmB + dc_inc <= dc_max: 
-        dc_pwmB += dc_inc
-    else:
-        dc_pwmB = dc_max
-        dc_pwmA = dc_max - dc_inc'''
-    
-    dc_pwmA = dc_speed_inc - dc_inc
-    dc_pwmB = dc_speed_inc + dc_inc
-
-    updateMotors()
+        dc_pwmA = dc_min
+        dc_pwmB = dc_inc
+        updateMotors()
 
 ##################### STOPPING METHODS ####################
 
