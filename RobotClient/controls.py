@@ -198,9 +198,16 @@ def left():
     global lastCall
 
     if lastCall == BACKWARD: 
-        backward()
+        motorA_01_state = GPIO.HIGH
+        motorA_02_state = GPIO.LOW
+        motorB_01_state = GPIO.HIGH
+        motorB_02_state = GPIO.LOW
     else: 
-        forward()
+        motorA_01_state = GPIO.LOW
+        motorA_02_state = GPIO.HIGH
+        motorB_01_state = GPIO.LOW
+        motorB_02_state = GPIO.HIGH
+    
     #if dc_pwmA + dc_inc <= dc_max: 
         #dc_pwmA += dc_inc
     #else:
@@ -227,9 +234,15 @@ def right():
     global lastCall
 
     if lastCall == BACKWARD: 
-        backward()
+        motorA_01_state = GPIO.HIGH
+        motorA_02_state = GPIO.LOW
+        motorB_01_state = GPIO.HIGH
+        motorB_02_state = GPIO.LOW
     else: 
-        forward()
+        motorA_01_state = GPIO.LOW
+        motorA_02_state = GPIO.HIGH
+        motorB_01_state = GPIO.LOW
+        motorB_02_state = GPIO.HIGH
     '''if dc_pwmB + dc_inc <= dc_max: 
         dc_pwmB += dc_inc
     else:
