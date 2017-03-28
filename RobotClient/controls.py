@@ -9,13 +9,13 @@ import RPi.GPIO as GPIO
 import time
 
 #Motor Driver Pin declarations
-motorA_pwm = 18 #GPIO18 for Motor A PWM speed control
-motorA_01 = 5 #GPIO05 for Motor A 01 input
-motorA_02 = 6 #GPIO06 for Motor A 02 input
-motorB_01 = 13 #GPIO13 for Motor B 01 input
-motorB_02 = 19 #GPIO19 for Motor B 02 input
-motorB_pwm = 26 #GPIO26 for Motor B PWM speed control
-stdby = 21 #GPIO21 for Standby pin on Motor Driver
+motorA_pwm = 12 #GPIO12 (Pin 32) for Motor A PWM speed control
+motorA_01 = 5 #GPIO05 (Pin 29) for Motor A 01 input
+motorA_02 = 6 #GPIO06 (Pin 31) for Motor A 02 input
+motorB_01 = 13 #GPIO13 (Pin 33) for Motor B 01 input
+motorB_02 = 19 #GPIO19 (Pin 35) for Motor B 02 input
+motorB_pwm = 26 #GPIO26 (Pin 37) for Motor B PWM speed control
+stdby = 21 #GPIO21 (Pin 40) for Standby pin on Motor Driver
 
 #PWM Constants
 dc_high = 95 # duty cycle (0-100) for PWM 
