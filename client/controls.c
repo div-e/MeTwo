@@ -32,8 +32,8 @@
 // Default pin modes
 int pwmA_val = PWM_MIN;
 int pwmB_val = PWM_MIN;
-int last_pwmA_val = pwmA_val;
-int last_pwmB_val = pwmB_val;
+int last_pwmA_val = PWM_MIN;
+int last_pwmB_val = PWM_MIN;
 int motorA_01_state = LOW;
 int motorA_02_state = LOW;
 int motorB_01_state = LOW;
@@ -44,9 +44,11 @@ int motorB_02_state = LOW;
 // Default lastCall to STOP
 int lastCall = STOP;
 
+void updateMotors(void);
+
 /////////////////// INITIALIZER ///////////////////
 // initializes wiringPi and pins
-void init()
+int init()
 {
     printf("%s\n", "Initialized");
 
@@ -60,11 +62,11 @@ void init()
     
     // not sure if we need soft pwm, but we'll try it first
     if (!softPwmCreate(motorA_pwm, PWM_MIN, PWM_MAX)) {
-        printf "Motor A PWM failed to create";
+        printf("Motor A PWM failed to create");
         return 1; 
     } 
     if (!softPwmCreate(motorB_pwm, PWM_MIN, PWM_MAX)) {
-        printf "Motor B PWM failed to create";
+        printf("Motor B PWM failed to create");
         return 1; 
     } 
 
@@ -77,6 +79,8 @@ void init()
     digitalWrite(stdby, HIGH); //Pull Standby high 
 
     stop();
+
+    return 0; 
 }
 
 //////////////////// FORWARD and BACKWARD METHODS /////////////

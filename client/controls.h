@@ -1,4 +1,4 @@
-void init(void);
+int init(void);
 void forward(void);
 void backward(void);
 void left(void);

@@ -10,7 +10,12 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    init();
+    if (init())
+    {
+        printf("%s\n", "Failed to initialize");
+        return 0;
+    }
+
     void (*controls[6])(void) = { forward, backward, stop, left, right, stop_turning };
 
     printf("%s\n", "Connecting...");
