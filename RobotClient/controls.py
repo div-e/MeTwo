@@ -100,6 +100,8 @@ def forward():
     global motorB_01_state
     global motorB_02_state
 
+    global dc_pwmA
+    global dc_pwmB
     global last_dc_pwmA 
     global last_dc_pwmB
 
@@ -143,6 +145,8 @@ def backward():
     global motorB_01_state
     global motorB_02_state
 
+    global dc_pwmA
+    global dc_pwmB
     global last_dc_pwmA 
     global last_dc_pwmB
 
@@ -186,6 +190,8 @@ def left():
     global motorB_01_state
     global motorB_02_state
 
+    global dc_pwmA
+    global dc_pwmB
     global last_dc_pwmA 
     global last_dc_pwmB
 
@@ -209,6 +215,8 @@ def right():
     global motorB_01_state
     global motorB_02_state
 
+    global dc_pwmA
+    global dc_pwmB
     global last_dc_pwmA 
     global last_dc_pwmB
 
@@ -234,6 +242,8 @@ def stop():
     global motorB_01_state
     global motorB_02_state
 
+    global dc_pwmA
+    global dc_pwmB
     global last_dc_pwmA 
     global last_dc_pwmB
 
@@ -263,6 +273,8 @@ def stop_turning():
     global motorB_01_state
     global motorB_02_state
 
+    global dc_pwmA
+    global dc_pwmB
     global last_dc_pwmA 
     global last_dc_pwmB
 
