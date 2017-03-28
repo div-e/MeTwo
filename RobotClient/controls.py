@@ -199,7 +199,7 @@ def left():
 
     if lastCall == BACKWARD: 
         backward()
-    elif lastCall == FORWARD: 
+    else: 
         forward()
     #if dc_pwmA + dc_inc <= dc_max: 
         #dc_pwmA += dc_inc
@@ -228,7 +228,7 @@ def right():
 
     if lastCall == BACKWARD: 
         backward()
-    elif lastCall == FORWARD: 
+    else: 
         forward()
     '''if dc_pwmB + dc_inc <= dc_max: 
         dc_pwmB += dc_inc
