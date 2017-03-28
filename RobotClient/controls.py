@@ -48,7 +48,7 @@ STOP = 0
 # Default lastCall to STOP
 lastCall = STOP
 
-######################### INITIALIZER ######################
+###################### INITIALIZER ######################
 
 # initializes pins (be sure to call before using other methods)
 def init(): 
@@ -70,8 +70,21 @@ def init():
 
     GPIO.output(stdby, GPIO.HIGH)
 
+    global dc_pwmA
+    global dc_pwmB
     pwmA.start(dc_pwmA)
     pwmB.start(dc_pwmB)
+
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global lastCall
+
     stop()
 
 ################ FORWARD and BACKWARD METHODS #################
@@ -80,7 +93,20 @@ def init():
 def forward():
     """Make the robot keep moving forward"""
     print("forward")
-    
+
+
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
+    global dc_pwmA
+    global dc_pwmB
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global lastCall
+
     if lastCall == FORWARD: 
         #Speed incrementing
         if dc_pwmA + dc_speed_inc <= dc_max: 
@@ -96,21 +122,35 @@ def forward():
         dc_pwmA = dc_speed_inc
         dc_pwmB = dc_speed_inc
 
+
     motorA_01_state = GPIO.LOW
     motorA_02_state = GPIO.HIGH
     motorB_01_state = GPIO.LOW
     motorB_02_state = GPIO.HIGH
 
     updateMotors()
-
+    
     last_dc_pwmA = dc_pwmA
     last_dc_pwmB = dc_pwmB
+
     lastCall = FORWARD
 
 # makes the robot go backward 
 def backward():
     """Make the robot keep moving backward"""
     print("backward")
+
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
+    global dc_pwmA
+    global dc_pwmB
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global lastCall
 
     if lastCall == BACKWARD: 
         #Speed incrementing
@@ -145,6 +185,18 @@ def left():
     """Make the robot keep turning left"""
     print("left")
 
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
+    global dc_pwmA
+    global dc_pwmB
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global lastCall
+
     if dc_pwmA + dc_inc <= dc_max: 
         dc_pwmA += dc_inc
     else:
@@ -157,6 +209,18 @@ def left():
 def right():
     """Make the robot keep turning right"""
     print("right")
+
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
+    global dc_pwmA
+    global dc_pwmB
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global lastCall
 
     if dc_pwmB + dc_inc <= dc_max: 
         dc_pwmB += dc_inc
@@ -172,6 +236,18 @@ def right():
 def stop():
     """Stop the robot"""
     print("stop")
+
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
+    global dc_pwmA
+    global dc_pwmB
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global lastCall
 
     dc_pwmA = dc_min
     dc_pwmB = dc_min
@@ -191,6 +267,18 @@ def stop():
 def stop_turning():
     """Stop turning"""
     print("stop turning")
+
+    global motorA_01_state
+    global motorA_02_state
+    global motorB_01_state
+    global motorB_02_state
+
+    global dc_pwmA
+    global dc_pwmB
+    global last_dc_pwmA 
+    global last_dc_pwmB
+
+    global lastCall
 
     if lastCall == FORWARD: 
         motorA_01_state = GPIO.LOW
