@@ -197,7 +197,10 @@ def left():
 
     global lastCall
 
-
+    if lastCall == BACKWARD: 
+        backward()
+    elif lastCall == FORWARD: 
+        forward()
     #if dc_pwmA + dc_inc <= dc_max: 
         #dc_pwmA += dc_inc
     #else:
@@ -223,7 +226,10 @@ def right():
 
     global lastCall
 
-
+    if lastCall == BACKWARD: 
+        backward()
+    elif lastCall == FORWARD: 
+        forward()
     '''if dc_pwmB + dc_inc <= dc_max: 
         dc_pwmB += dc_inc
     else:
@@ -291,7 +297,7 @@ def stop_turning():
         backward()
     else: 
         stop()
-        
+
 
 # Cleans up pins and pinmodes. Call init() again to start again. 
 def terminate(): 
