@@ -22,8 +22,6 @@ dc_high = 95 # duty cycle (0-100) for PWM
 dc_low = 20 # duty cycle (0-100) for PWM
 dc_off = 0 # duty cycle (0-100) for PWM
 pwm_freq = 50 #pwm frequency for setup
-pwmA = 0
-pwmB = 0
 
 def init(): 
     # Pin Setup:
@@ -37,8 +35,8 @@ def init():
     GPIO.setup(motorB_pwm, GPIO.OUT) # PWM pin set as output
     GPIO.setup(stdby, GPIO.OUT) # Standby pin on motor driver needs to be pulled high 
 
-    pwmA = GPIO.PWM(motorA_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
-    pwmB = GPIO.PWM(motorB_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
+    global pwmA = GPIO.PWM(motorA_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
+    global pwmB = GPIO.PWM(motorB_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
 
     #Initial states
     GPIO.output(motorA_01, GPIO.LOW)
