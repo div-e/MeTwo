@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
         printf("%s\n", "Failed to initialize");
         return 0;
     }
+    printf("%s\n", "Initialized");
 
     void (*controls[6])(void) = { forward, backward, stop, left, right, stop_turning };
 
