@@ -20,9 +20,9 @@ This repository contains the remote control system of the robot.
 - node index.js
 
 ### 4. Start the robot client
-- Please use python 3.6
-- cd to RobotClient
-- python3.6 client.py ip
+- cd to client/
+- ./build.sh
+- ./a.out ip
 - ip is the server ip address
 
 ### 5. Open a browser and navigate to the server address

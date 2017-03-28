@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
         printf("%s\n", "Failed to initialize");
         return 0;
     }
+    printf("%s\n", "Initialized");
 
     void (*controls[6])(void) = { forward, backward, stop, left, right, stop_turning };
 
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 
     struct sockaddr_in ip;
     ip.sin_family = AF_INET;
-    ip.sin_port = htons(6000);
+    ip.sin_port = htons(5000);
     if (!inet_pton(AF_INET, argv[1], &ip.sin_addr))
     {
         printf("%s\n", "Invalid IP");

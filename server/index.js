@@ -37,6 +37,9 @@ wsServer.on('connection', ws => {
                 console.log(e)
             }
         }
+        else{
+            console.log('robot is not connected')
+        }
     })
     ws.on('close', () => {
         console.log('browser disconnected')

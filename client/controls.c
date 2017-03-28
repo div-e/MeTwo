@@ -52,7 +52,7 @@ void updateMotors(void);
 // initializes wiringPi and pins
 int init()
 {
-    printf("%s\n", "Initialize");
+    printf("%s\n", "Initializing...");
 
     if(getuid()!=0) //wiringPi requires root privileges  
     {  
