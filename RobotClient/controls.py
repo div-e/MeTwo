@@ -94,7 +94,6 @@ def forward():
     """Make the robot keep moving forward"""
     print("forward")
 
-
     global motorA_01_state
     global motorA_02_state
     global motorB_01_state
@@ -107,6 +106,7 @@ def forward():
 
     global lastCall
 
+'''
     if lastCall == FORWARD: 
         #Speed incrementing
         if dc_pwmA + dc_speed_inc <= dc_max: 
@@ -118,10 +118,9 @@ def forward():
             dc_pwmB += dc_speed_inc
         else:
             dc_pwmB = dc_max
-    else:
-        dc_pwmA = dc_speed_inc
-        dc_pwmB = dc_speed_inc
-
+    else:'''
+    dc_pwmA = dc_speed_inc
+    dc_pwmB = dc_speed_inc
 
     motorA_01_state = GPIO.LOW
     motorA_02_state = GPIO.HIGH
@@ -152,6 +151,7 @@ def backward():
 
     global lastCall
 
+'''
     if lastCall == BACKWARD: 
         #Speed incrementing
         if dc_pwmA + dc_speed_inc <= dc_max: 
@@ -163,9 +163,9 @@ def backward():
             dc_pwmB += dc_speed_inc
         else:
             dc_pwmB = dc_max
-    else:
-        dc_pwmA = dc_speed_inc
-        dc_pwmB = dc_speed_inc
+    else:'''
+    dc_pwmA = dc_speed_inc
+    dc_pwmB = dc_speed_inc
 
     motorA_01_state = GPIO.HIGH
     motorA_02_state = GPIO.LOW
@@ -197,11 +197,12 @@ def left():
 
     global lastCall
 
-    if dc_pwmA + dc_inc <= dc_max: 
-        dc_pwmA += dc_inc
-    else:
-        dc_pwmA = dc_max
-        dc_pwmB = dc_max - dc_inc
+
+    #if dc_pwmA + dc_inc <= dc_max: 
+        #dc_pwmA += dc_inc
+    #else:
+    dc_pwmA = dc_speed_inc + dc_inc
+    dc_pwmB = dc_speed_inc - dc_inc
 
     updateMotors()
 
@@ -222,11 +223,15 @@ def right():
 
     global lastCall
 
-    if dc_pwmB + dc_inc <= dc_max: 
+
+    '''if dc_pwmB + dc_inc <= dc_max: 
         dc_pwmB += dc_inc
     else:
         dc_pwmB = dc_max
-        dc_pwmA = dc_max - dc_inc
+        dc_pwmA = dc_max - dc_inc'''
+    
+    dc_pwmA = dc_speed_inc - dc_inc
+    dc_pwmB = dc_speed_inc + dc_inc
 
     updateMotors()
 
@@ -267,7 +272,7 @@ def stop():
 def stop_turning():
     """Stop turning"""
     print("stop turning")
-
+    
     global motorA_01_state
     global motorA_02_state
     global motorB_01_state
@@ -314,5 +319,4 @@ def updateMotors():
     GPIO.output(motorB_01, motorB_01_state)
     GPIO.output(motorB_02, motorB_02_state)
 
-    
     
