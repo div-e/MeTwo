@@ -106,7 +106,7 @@ def forward():
 
     global lastCall
 
-'''
+    '''
     if lastCall == FORWARD: 
         #Speed incrementing
         if dc_pwmA + dc_speed_inc <= dc_max: 
