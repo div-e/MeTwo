@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include "controls.h"
 
-void init()
+int init()
 {
-    printf("%s\n", "Initialized");
+    printf("%s\n", "Initializing");
+    return 0;
 }
 
 void forward()
