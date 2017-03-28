@@ -124,7 +124,6 @@ def stop():
     GPIO.output(motorA_02, GPIO.LOW)
     GPIO.output(motorB_01, GPIO.LOW)
     GPIO.output(motorB_02, GPIO.LOW)
-    GPIO.output(stdby, GPIO.LOW)
 
 
 def stop_turning():
@@ -135,6 +134,7 @@ def stop_turning():
     pwmB.ChangeDutyCycle(dc_high)
 
 def terminate(): 
+    GPIO.output(stdby, GPIO.LOW)
     stop()
     pwmA.stop() # stop PWM
     pwmB.stop() # stop PWM
