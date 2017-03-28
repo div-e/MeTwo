@@ -33,5 +33,5 @@ void stop()
 
 void stop_turning()
 {
-    printf("%s\n", "stop_truning");
+    printf("%s\n", "stop_turning");
 }

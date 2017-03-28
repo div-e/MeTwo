@@ -3,7 +3,7 @@
 
 #include <wiringPi.h> 
 #include <softPwm.h> 
-
+#include <errno.h>
 
 //////////////// VARIABLE DEFINITIONS ////////////////
 
@@ -54,19 +54,19 @@ int init()
 
     if(getuid()!=0) //wiringPi requires root privileges  
     {  
-        printf("Error:wiringPi must be run as root.\n");  
+        printf("Error: wiringPi must be run as root.\n");  
         return 1;  
     } 
 
     wiringPiSetupGpio(); // Initializes wiringPi using the Broadcom GPIO pin numbers
     
     // not sure if we need soft pwm, but we'll try it first
-    if (!softPwmCreate(motorA_pwm, PWM_MIN, PWM_MAX)) {
-        printf("Motor A PWM failed to create");
+    if (softPwmCreate(motorA_pwm, PWM_MIN, PWM_MAX) != 0) {
+        printf("Motor A PWM failed to create %s\n", strerror(errno));
         return 1; 
     } 
-    if (!softPwmCreate(motorB_pwm, PWM_MIN, PWM_MAX)) {
-        printf("Motor B PWM failed to create");
+    if (softPwmCreate(motorB_pwm, PWM_MIN, PWM_MAX) != 0) {
+        printf("Motor B PWM failed to create %s\n", strerror(errno));
         return 1; 
     } 
 
@@ -79,7 +79,7 @@ int init()
     digitalWrite(stdby, HIGH); //Pull Standby high 
 
     stop();
-
+    
     return 0; 
 }
 
@@ -206,10 +206,10 @@ void stop()
     lastCall = STOP;
 }
 
-// uts robot back into original FORWARD, BACKWARD, or STOP state
+// Puts robot back into original FORWARD, BACKWARD, or STOP state
 void stop_turning()
 {
-    printf("%s\n", "stop_truning");
+    printf("%s\n", "stop_turning");
 
     if (lastCall == FORWARD) { 
         forward();
@@ -225,8 +225,8 @@ void stop_turning()
 // Helper method to update the pins to the set global variables
 void updateMotors() 
 {
-    pwmWrite(motorA_pwm, pwmA_val); 
-    pwmWrite(motorB_pwm, pwmB_val); 
+    softPwmWrite(motorA_pwm, pwmA_val); 
+    softPwmWrite(motorB_pwm, pwmB_val); 
 
     digitalWrite(motorA_01, motorA_01_state);
     digitalWrite(motorA_02, motorA_02_state);
