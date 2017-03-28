@@ -3,7 +3,7 @@
 
 #include <wiringPi.h> 
 #include <softPwm.h> 
-
+#include <errno.h>
 
 //////////////// VARIABLE DEFINITIONS ////////////////
 
@@ -61,12 +61,12 @@ int init()
     wiringPiSetupGpio(); // Initializes wiringPi using the Broadcom GPIO pin numbers
     
     // not sure if we need soft pwm, but we'll try it first
-    if (!softPwmCreate(motorA_pwm, PWM_MIN, PWM_MAX)) {
-        printf("Motor A PWM failed to create");
+    if (softPwmCreate(motorA_pwm, PWM_MIN, PWM_MAX) != 0) {
+        printf("Motor A PWM failed to create %s\n", strerror(errno));
         return 1; 
     } 
-    if (!softPwmCreate(motorB_pwm, PWM_MIN, PWM_MAX)) {
-        printf("Motor B PWM failed to create");
+    if (softPwmCreate(motorB_pwm, PWM_MIN, PWM_MAX) != 0) {
+        printf("Motor B PWM failed to create %s\n", strerror(errno));
         return 1; 
     } 
 
@@ -206,10 +206,10 @@ void stop()
     lastCall = STOP;
 }
 
-// uts robot back into original FORWARD, BACKWARD, or STOP state
+// Puts robot back into original FORWARD, BACKWARD, or STOP state
 void stop_turning()
 {
-    printf("%s\n", "stop_truning");
+    printf("%s\n", "stop_turning");
 
     if (lastCall == FORWARD) { 
         forward();
