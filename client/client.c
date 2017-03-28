@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     }
     printf("%s\n", "Initialized");
 
-    void (*controls[6])(void) = { forward, backward, stop, left, right, stop_turning };
+    void (*controls[6])(void) = { forward, backward, stop, left, right, stop_turning, up, down };
 
     printf("%s\n", "Connecting...");
     int fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);

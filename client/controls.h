@@ -5,3 +5,6 @@ void left(void);
 void right(void);
 void stop(void);
 void stop_turning(void);
+
+void up(void);
+void down(void);
