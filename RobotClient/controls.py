@@ -23,28 +23,29 @@ dc_low = 20 # duty cycle (0-100) for PWM
 dc_off = 0 # duty cycle (0-100) for PWM
 pwm_freq = 50 #pwm frequency for setup
 
-# Pin Setup:
-GPIO.setmode(GPIO.BCM) # Broadcom pin-numbering scheme
+def init(): 
+    # Pin Setup:
+    GPIO.setmode(GPIO.BCM) # Broadcom pin-numbering scheme
 
-GPIO.setup(motorA_pwm, GPIO.OUT) # LED pin set as output
-GPIO.setup(motorA_01, GPIO.OUT) # PWM pin set as output
-GPIO.setup(motorA_02, GPIO.OUT) # PWM pin set as output
-GPIO.setup(motorB_01, GPIO.OUT) # PWM pin set as output
-GPIO.setup(motorB_02, GPIO.OUT) # PWM pin set as output
-GPIO.setup(motorB_pwm, GPIO.OUT) # PWM pin set as output
-GPIO.setup(stdby, GPIO.OUT) # Standby pin on motor driver needs to be pulled high 
+    GPIO.setup(motorA_pwm, GPIO.OUT) # LED pin set as output
+    GPIO.setup(motorA_01, GPIO.OUT) # PWM pin set as output
+    GPIO.setup(motorA_02, GPIO.OUT) # PWM pin set as output
+    GPIO.setup(motorB_01, GPIO.OUT) # PWM pin set as output
+    GPIO.setup(motorB_02, GPIO.OUT) # PWM pin set as output
+    GPIO.setup(motorB_pwm, GPIO.OUT) # PWM pin set as output
+    GPIO.setup(stdby, GPIO.OUT) # Standby pin on motor driver needs to be pulled high 
 
-pwmA = GPIO.PWM(motorA_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
-pwmB = GPIO.PWM(motorB_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
+    pwmA = GPIO.PWM(motorA_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
+    pwmB = GPIO.PWM(motorB_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
 
-#Initial states
-GPIO.output(motorA_01, GPIO.LOW)
-GPIO.output(motorA_02, GPIO.LOW)
-GPIO.output(motorB_01, GPIO.LOW)
-GPIO.output(motorB_02, GPIO.LOW)
-GPIO.output(stdby, GPIO.HIGH)
-pwmA.start(dc_low)
-pwmB.start(dc_low)
+    #Initial states
+    GPIO.output(motorA_01, GPIO.LOW)
+    GPIO.output(motorA_02, GPIO.LOW)
+    GPIO.output(motorB_01, GPIO.LOW)
+    GPIO.output(motorB_02, GPIO.LOW)
+    GPIO.output(stdby, GPIO.HIGH)
+    pwmA.start(dc_low)
+    pwmB.start(dc_low)
 
 def forward():
     """Make the robot keep moving forward"""
@@ -131,7 +132,7 @@ def stop():
 def stop_turning():
     """Stop turning"""
     print("stop turning")
-    
+
     pwmA.ChangeDutyCycle(dc_high)
     pwmB.ChangeDutyCycle(dc_high)
 
