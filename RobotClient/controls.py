@@ -151,7 +151,7 @@ def backward():
 
     global lastCall
 
-'''
+    '''
     if lastCall == BACKWARD: 
         #Speed incrementing
         if dc_pwmA + dc_speed_inc <= dc_max: 
