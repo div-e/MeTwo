@@ -8,7 +8,9 @@ Only forward(), backward() and stop() will be called after a call to left() or r
 import RPi.GPIO as GPIO
 import time
 
-#Motor Driver Pin declarations
+################## VARIABLE DEFINITIONS ##################
+
+# Motor Driver Pin declarations
 motorA_pwm = 12 #GPIO12 (Pin 32) for Motor A PWM speed control
 motorA_01 = 5 #GPIO05 (Pin 29) for Motor A 01 input
 motorA_02 = 6 #GPIO06 (Pin 31) for Motor A 02 input
@@ -17,12 +19,38 @@ motorB_02 = 19 #GPIO19 (Pin 35) for Motor B 02 input
 motorB_pwm = 26 #GPIO26 (Pin 37) for Motor B PWM speed control
 stdby = 21 #GPIO21 (Pin 40) for Standby pin on Motor Driver
 
-#PWM Constants
-dc_high = 95 # duty cycle (0-100) for PWM 
-dc_low = 20 # duty cycle (0-100) for PWM
-dc_off = 0 # duty cycle (0-100) for PWM
-pwm_freq = 50 #pwm frequency for setup
+# PWM Constants
+dc_max = 100
+dc_min = 0
+dc_speed_inc = 60
+dc_inc = 20
 
+# pwm frequency for setup
+pwm_freq = 50 
+
+# Default pin modes
+dc_pwmA = dc_min
+dc_pwmB = dc_min
+last_dc_pwmA = dc_pwmA
+last_dc_pwmB = dc_pwmB
+motorA_01_state = GPIO.LOW
+motorA_02_state = GPIO.LOW
+motorB_01_state = GPIO.LOW
+motorB_02_state = GPIO.LOW
+
+# Last call states 
+FORWARD = 1
+BACKWARD = 2
+RIGHT = 3
+LEFT = 4
+STOP = 0
+
+# Default lastCall to STOP
+lastCall = STOP
+
+######################### INITIALIZER ######################
+
+# initializes pins (be sure to call before using other methods)
 def init(): 
     # Pin Setup:
     GPIO.setmode(GPIO.BCM) # Broadcom pin-numbering scheme
@@ -40,102 +68,163 @@ def init():
     global pwmB
     pwmB  = GPIO.PWM(motorB_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
 
-    #Initial states
-    GPIO.output(motorA_01, GPIO.LOW)
-    GPIO.output(motorA_02, GPIO.LOW)
-    GPIO.output(motorB_01, GPIO.LOW)
-    GPIO.output(motorB_02, GPIO.LOW)
     GPIO.output(stdby, GPIO.HIGH)
-    pwmA.start(dc_low)
-    pwmB.start(dc_low)
 
+    pwmA.start(dc_pwmA)
+    pwmB.start(dc_pwmB)
+    stop()
+
+################ FORWARD and BACKWARD METHODS #################
+
+# makes the robot go forward 
 def forward():
     """Make the robot keep moving forward"""
     print("forward")
+    
+    if lastCall == FORWARD: 
+        #Speed incrementing
+        if dc_pwmA + dc_speed_inc <= dc_max: 
+            dc_pwmA += dc_speed_inc
+        else:
+            dc_pwmA = dc_max
+        
+        if dc_pwmB + dc_speed_inc <= dc_max: 
+            dc_pwmB += dc_speed_inc
+        else:
+            dc_pwmB = dc_max
+    else:
+        dc_pwmA = dc_speed_inc
+        dc_pwmB = dc_speed_inc
 
-    pwmA.ChangeDutyCycle(dc_off)
-    pwmB.ChangeDutyCycle(dc_off)
+    motorA_01_state = GPIO.LOW
+    motorA_02_state = GPIO.HIGH
+    motorB_01_state = GPIO.LOW
+    motorB_02_state = GPIO.HIGH
 
-    GPIO.output(motorA_01, GPIO.LOW)
-    GPIO.output(motorA_02, GPIO.HIGH)
-    GPIO.output(motorB_01, GPIO.LOW)
-    GPIO.output(motorB_02, GPIO.HIGH)
+    updateMotors()
 
-    pwmA.ChangeDutyCycle(dc_high)
-    pwmB.ChangeDutyCycle(dc_high)
+    last_dc_pwmA = dc_pwmA
+    last_dc_pwmB = dc_pwmB
+    lastCall = FORWARD
 
-
+# makes the robot go backward 
 def backward():
     """Make the robot keep moving backward"""
     print("backward")
 
-    pwmA.ChangeDutyCycle(dc_off)
-    pwmB.ChangeDutyCycle(dc_off)
+    if lastCall == BACKWARD: 
+        #Speed incrementing
+        if dc_pwmA + dc_speed_inc <= dc_max: 
+            dc_pwmA += dc_speed_inc
+        else:
+            dc_pwmA = dc_max
+        
+        if dc_pwmB + dc_speed_inc <= dc_max: 
+            dc_pwmB += dc_speed_inc
+        else:
+            dc_pwmB = dc_max
+    else:
+        dc_pwmA = dc_speed_inc
+        dc_pwmB = dc_speed_inc
 
-    GPIO.output(motorA_01, GPIO.HIGH)
-    GPIO.output(motorA_02, GPIO.LOW)
-    GPIO.output(motorB_01, GPIO.HIGH)
-    GPIO.output(motorB_02, GPIO.LOW)
+    motorA_01_state = GPIO.HIGH
+    motorA_02_state = GPIO.LOW
+    motorB_01_state = GPIO.HIGH
+    motorB_02_state = GPIO.LOW
 
-    pwmA.ChangeDutyCycle(dc_high)
-    pwmB.ChangeDutyCycle(dc_high)
+    updateMotors()
 
+    last_dc_pwmA = dc_pwmA
+    last_dc_pwmB = dc_pwmB
+    lastCall = BACKWARD
 
+##################### TURNING METHODS ####################
+
+# turning LEFT means moving motor A faster than motor B 
 def left():
     """Make the robot keep turning left"""
     print("left")
 
-    pwmA.ChangeDutyCycle(dc_off)
-    pwmB.ChangeDutyCycle(dc_off)
+    if dc_pwmA + dc_inc <= dc_max: 
+        dc_pwmA += dc_inc
+    else
+        dc_pwmA = dc_max
+        dc_pwmB = dc_max - dc_inc
 
-    GPIO.output(motorA_01, GPIO.LOW)
-    GPIO.output(motorA_02, GPIO.HIGH)
-    GPIO.output(motorB_01, GPIO.LOW)
-    GPIO.output(motorB_02, GPIO.HIGH)
+    updateMotors()
 
-    pwmA.ChangeDutyCycle(dc_low)
-    pwmB.ChangeDutyCycle(dc_high)
-
-
+# turning RIGHT means moving motor B faster than motor A 
 def right():
     """Make the robot keep turning right"""
     print("right")
 
-    pwmA.ChangeDutyCycle(dc_off)
-    pwmB.ChangeDutyCycle(dc_off)
+    if dc_pwmB + dc_inc <= dc_max: 
+        dc_pwmB += dc_inc
+    else
+        dc_pwmB = dc_max
+        dc_pwmA = dc_max - dc_inc
 
-    GPIO.output(motorA_01, GPIO.LOW)
-    GPIO.output(motorA_02, GPIO.HIGH)
-    GPIO.output(motorB_01, GPIO.LOW)
-    GPIO.output(motorB_02, GPIO.HIGH)
+    updateMotors()
 
-    pwmA.ChangeDutyCycle(dc_high)
-    pwmB.ChangeDutyCycle(dc_low)
+##################### STOPPING METHODS ####################
 
-
+# Stops all motors and sets PWM to 0
 def stop():
     """Stop the robot"""
     print("stop")
 
-    pwmA.ChangeDutyCycle(dc_off)
-    pwmB.ChangeDutyCycle(dc_off)
+    dc_pwmA = dc_min
+    dc_pwmB = dc_min
 
-    GPIO.output(motorA_01, GPIO.LOW)
-    GPIO.output(motorA_02, GPIO.LOW)
-    GPIO.output(motorB_01, GPIO.LOW)
-    GPIO.output(motorB_02, GPIO.LOW)
+    motorA_01_state = GPIO.LOW
+    motorA_02_state = GPIO.LOW
+    motorB_01_state = GPIO.LOW
+    motorB_02_state = GPIO.LOW
 
+    updateMotors() 
 
+    last_dc_pwmA = dc_pwmA
+    last_dc_pwmB = dc_pwmB
+    lastCall = STOP
+
+# Puts robot back into original FORWARD, BACKWARD, or STOP state
 def stop_turning():
     """Stop turning"""
     print("stop turning")
 
-    pwmA.ChangeDutyCycle(dc_high)
-    pwmB.ChangeDutyCycle(dc_high)
+    if lastCall == FORWARD: 
+        motorA_01_state = GPIO.LOW
+        motorA_02_state = GPIO.HIGH
+        motorB_01_state = GPIO.LOW
+        motorB_02_state = GPIO.HIGH
+    elif lastCall == BACKWARD:
+        motorA_01_state = GPIO.HIGH
+        motorA_02_state = GPIO.LOW
+        motorB_01_state = GPIO.HIGH
+        motorB_02_state = GPIO.LOW
+        
+    dc_pwmA = last_dc_pwmA
+    dc_pwmB = last_dc_pwmB
 
+    updateMotors()
+
+# Cleans up pins and pinmodes. Call init() again to start again. 
 def terminate(): 
-    GPIO.output(stdby, GPIO.LOW)
     stop()
+    GPIO.output(stdby, GPIO.LOW)
     pwmA.stop() # stop PWM
     pwmB.stop() # stop PWM
     GPIO.cleanup() # cleanup all GPIO
+
+# Helper method to update the pins to the set global variables
+def updateMotors(): 
+    pwmA.ChangeDutyCycle(dc_pwmA)
+    pwmB.ChangeDutyCycle(dc_pwmB)
+
+    GPIO.output(motorA_01, motorA_01_state)
+    GPIO.output(motorA_02, motorA_02_state)
+    GPIO.output(motorB_01, motorB_01_state)
+    GPIO.output(motorB_02, motorB_02_state)
+
+    
+    
