@@ -147,7 +147,7 @@ def left():
 
     if dc_pwmA + dc_inc <= dc_max: 
         dc_pwmA += dc_inc
-    else
+    else:
         dc_pwmA = dc_max
         dc_pwmB = dc_max - dc_inc
 
@@ -160,7 +160,7 @@ def right():
 
     if dc_pwmB + dc_inc <= dc_max: 
         dc_pwmB += dc_inc
-    else
+    else:
         dc_pwmB = dc_max
         dc_pwmA = dc_max - dc_inc
 
