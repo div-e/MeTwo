@@ -22,6 +22,8 @@ dc_high = 95 # duty cycle (0-100) for PWM
 dc_low = 20 # duty cycle (0-100) for PWM
 dc_off = 0 # duty cycle (0-100) for PWM
 pwm_freq = 50 #pwm frequency for setup
+pwmA = 0
+pwmB = 0
 
 def init(): 
     # Pin Setup:
