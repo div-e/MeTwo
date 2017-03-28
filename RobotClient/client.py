@@ -18,14 +18,14 @@ controls.init()
 def listen():
     """Create a TCP socket and listen to instructions from the server"""
 
-    if len(sys.argv) < 3:
-        print("Usage: python client.py ip port")
+    if len(sys.argv) < 2:
+        print("Usage: python client.py ip")
         return
 
     tcp_socket = socket.socket()
     try:
         print("Connecting...")
-        tcp_socket.connect((sys.argv[1], int(sys.argv[2])))
+        tcp_socket.connect((sys.argv[1], 6000))
         print("Connected")
     except (socket.error, ValueError) as err:
         print(err)
