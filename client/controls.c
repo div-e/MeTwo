@@ -50,11 +50,11 @@ void updateMotors(void);
 // initializes wiringPi and pins
 int init()
 {
-    printf("%s\n", "Initialized");
+    printf("%s\n", "Initialize");
 
     if(getuid()!=0) //wiringPi requires root privileges  
     {  
-        printf("Error:wiringPi must be run as root.\n");  
+        printf("Error: wiringPi must be run as root.\n");  
         return 1;  
     } 
 
@@ -79,7 +79,7 @@ int init()
     digitalWrite(stdby, HIGH); //Pull Standby high 
 
     stop();
-
+    
     return 0; 
 }
 
@@ -225,8 +225,8 @@ void stop_turning()
 // Helper method to update the pins to the set global variables
 void updateMotors() 
 {
-    pwmWrite(motorA_pwm, pwmA_val); 
-    pwmWrite(motorB_pwm, pwmB_val); 
+    softPwmWrite(motorA_pwm, pwmA_val); 
+    softPwmWrite(motorB_pwm, pwmB_val); 
 
     digitalWrite(motorA_01, motorA_01_state);
     digitalWrite(motorA_02, motorA_02_state);
