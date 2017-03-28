@@ -13,6 +13,7 @@ STOP = 5
 CONTROLS = [controls.forward, controls.backward, controls.stop,
             controls.left, controls.right, controls.stop_turning]
 
+controls.init()
 
 def listen():
     """Create a TCP socket and listen to instructions from the server"""
