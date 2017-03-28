@@ -35,8 +35,10 @@ def init():
     GPIO.setup(motorB_pwm, GPIO.OUT) # PWM pin set as output
     GPIO.setup(stdby, GPIO.OUT) # Standby pin on motor driver needs to be pulled high 
 
-    global pwmA = GPIO.PWM(motorA_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
-    global pwmB = GPIO.PWM(motorB_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
+    global pwmA
+    pwmA = GPIO.PWM(motorA_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
+    global pwmB
+    pwmB  = GPIO.PWM(motorB_pwm, pwm_freq) #Initialize PWM on motorA_pwm 100Hz frequency
 
     #Initial states
     GPIO.output(motorA_01, GPIO.LOW)
@@ -124,10 +126,6 @@ def stop():
     GPIO.output(motorB_02, GPIO.LOW)
     GPIO.output(stdby, GPIO.LOW)
 
-    pwmA.stop() # stop PWM
-    pwmB.stop() # stop PWM
-    GPIO.cleanup() # cleanup all GPIO
-
 
 def stop_turning():
     """Stop turning"""
@@ -136,3 +134,8 @@ def stop_turning():
     pwmA.ChangeDutyCycle(dc_high)
     pwmB.ChangeDutyCycle(dc_high)
 
+def terminate(): 
+    stop()
+    pwmA.stop() # stop PWM
+    pwmB.stop() # stop PWM
+    GPIO.cleanup() # cleanup all GPIO
