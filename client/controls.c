@@ -90,10 +90,10 @@ int init()
 
 // increments the camera tilt servo by SINC val
 void up() {
-    if(pwmServo_val + PWM_SINC <= PWM_MAX) {
-        pwmServo_val += PWM_SINC
+    if(pwmServo_val + PWM_SINC <= PWM_SERVO_MAX) {
+        pwmServo_val += PWM_SINC;
     } else {
-        pwmServo_val = PWM_MAX; 
+        pwmServo_val = PWM_SERVO_MAX; 
     }
     printf("Up was called. Servo val: %d\n", pwmServo_val);
     pwmWrite(servo, pwmServo_val);
@@ -102,7 +102,7 @@ void up() {
 // decrements the camera tilt servo by SINC val
 void down() {
     if(pwmServo_val - PWM_SINC >= PWM_MIN) {
-        pwmServo_val -= PWM_SINC
+        pwmServo_val -= PWM_SINC;
     } else {
         pwmServo_val = PWM_MIN; 
     }
