@@ -10,6 +10,8 @@
     const STOP_T = new Uint8Array([6]).buffer;
     const UP = new Uint8Array([7]).buffer
     const DOWN = new Uint8Array([8]).buffer
+    const STOP_U = new Uint8Array([9]).buffer
+    const STOP_D = new Uint8Array([10]).buffer
 
     connect();
 
@@ -25,21 +27,17 @@
     var a = false;
     var s = false;
     var d = false;
-    let i = false;
-    let k = false;
 
     function keyDownHandler(e) {
-        if (e.key === "i" && !k) {
-            i = true
-            ws.send(UP)
-        }
-        else if (e.key === "k" && !i) {
-            k = true;
-            ws.send(DOWN)
-        }
 
         if (e.repeat) {
             return;
+        }
+        if (e.key === "i") {
+            ws.send(UP)
+        }
+        else if (e.key === "k") {
+            ws.send(DOWN)
         }
         if (e.key === "w" && !w && !s) {
             w = true;
@@ -80,10 +78,10 @@
             d = false;
         }
         else if (e.key === "i") {
-            i = false
+            ws.send(STOP_U)
         }
         else if (e.key === "k") {
-            k = false
+            ws.send(STOP_D)
         }
     }
 })()

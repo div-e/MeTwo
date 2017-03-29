@@ -1,10 +1,13 @@
 const WebSocket = require('ws')
 const net = require('net')
+const CameraState = require('./CameraState')
 
 let robot = null
+let state = null
 
 const tcpServer = net.createServer(c => {
     robot = c
+    state = new CameraState()
     console.log('robot connected')
     c.on('close', had_error => {
         robot = null
@@ -24,10 +27,19 @@ const wsServer = new WebSocket.Server({
     port: 6001
 })
 
+let up = false
+let down = false
+
 wsServer.on('connection', ws => {
     console.log('browser connected')
     ws.on('message', message => {
         if (robot != null) {
+            let flag = message[0]
+            if (flag >= 7) {
+                state.handle(message, robot)
+                return
+            }
+
             try {
                 robot.write(message)
             }
@@ -37,7 +49,7 @@ wsServer.on('connection', ws => {
                 console.log(e)
             }
         }
-        else{
+        else {
             console.log('robot is not connected')
         }
     })
