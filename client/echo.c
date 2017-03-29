@@ -36,3 +36,13 @@ void stop_turning()
 {
     printf("%s\n", "stop_turning");
 }
+
+void up()
+{
+    printf("%s\n", "up");
+}
+
+void down()
+{
+    printf("%s\n", "down");
+}

@@ -1,14 +1,18 @@
-'use strict';
-
+const State = require('./State')
 const Signals = require('./Signals')
 
-module.exports = class CameraState {
+
+
+module.exports = class CameraState extends State {
     constructor() {
+        super()
         this.up = false
         this.down = false
     }
 
-    isValid(flag) {
+
+
+    validate(flag) {
         if (flag === Signals.UP) {
             if (this.down || this.up) {
                 return false
@@ -36,32 +40,33 @@ module.exports = class CameraState {
             }
             return false
         }
+
+        return false
     }
+
+
 
     handle(buffer, socket) {
         let flag = buffer[0]
-        if (!this.isValid(flag)) {
+        if (!this.validate(flag)) {
             return
         }
-        if (flag <= Signals.DOWN) {
-            try {
-                socket.write(buffer)
-            }
-            catch (e) {
-                return
-            }
 
-            this.handler = setInterval(() => {
-                try {
-                    socket.write(buffer)
-                }
-                catch (e) {
-                    clearInterval(this.handler)
-                }
+        if (flag <= Signals.DOWN) {
+            Signals.map(buffer)
+            super.redirect(buffer, socket)
+            this.interval = setInterval(() => {
+                super.redirect(buffer, socket)
             }, 100)
         }
         else {
-            clearInterval(this.handler)
+            clearInterval(this.interval)
         }
+    }
+
+
+
+    close() {
+        clearInterval(this.interval)
     }
 }
