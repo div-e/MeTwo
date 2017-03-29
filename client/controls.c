@@ -29,8 +29,8 @@
 #define PWM_MAX 100 
 #define PWM_SPINC 60 //how high the motors go when FORWARD or BACKWARD
 #define PWM_INC 20 //for turning
-#define PWM_SERVO_MAX 115
-#define PWM_SERVO_MIN 20
+#define PWM_SERVO_MAX 100
+#define PWM_SERVO_MIN 25
 #define PWM_SINC 1
 
 // Default pin modes
