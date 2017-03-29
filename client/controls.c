@@ -29,8 +29,9 @@
 #define PWM_MAX 100 
 #define PWM_SPINC 60 //how high the motors go when FORWARD or BACKWARD
 #define PWM_INC 20 //for turning
-#define PWM_SERVO_MAX 300
-#define PWM_SINC 5
+#define PWM_SERVO_MAX 115
+#define PWM_SERVO_MIN 20
+#define PWM_SINC 1
 
 // Default pin modes
 int pwmA_val = PWM_MIN;
@@ -77,7 +78,7 @@ int init()
     pinMode(motorB_01, OUTPUT);
     pinMode(motorB_02, OUTPUT);
     pinMode(servo, PWM_OUTPUT);
-    
+
     pwmSetMode(PWM_MODE_MS); 
     pwmSetClock(384); //clock at 50kHz (20us tick)
     pwmSetRange(1000); //range at 1000 ticks (20ms)
@@ -94,10 +95,10 @@ int init()
 
 // increments the camera tilt servo by SINC val
 void up() {
-    if(pwmServo_val + PWM_SINC <= PWM_MAX) {
+    if(pwmServo_val + PWM_SINC <= PWM_SERVO_MAX) {
         pwmServo_val += PWM_SINC
     } else {
-        pwmServo_val = PWM_MAX; 
+        pwmServo_val = PWM_SERVO_MAX; 
     }
     printf("Up was called. Servo val: %d\n", pwmServo_val);
     pwmWrite(servo, pwmServo_val);
@@ -105,10 +106,10 @@ void up() {
 
 // decrements the camera tilt servo by SINC val
 void down() {
-    if(pwmServo_val - PWM_SINC >= PWM_MIN) {
+    if(pwmServo_val - PWM_SINC >= PWM_SERVO_MIN) {
         pwmServo_val -= PWM_SINC
     } else {
-        pwmServo_val = PWM_MIN; 
+        pwmServo_val = PWM_SERVO_MIN; 
     }
     printf("Down was called. Servo val: %d\n", pwmServo_val);
     pwmWrite(servo, pwmServo_val);
