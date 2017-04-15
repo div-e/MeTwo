@@ -4,6 +4,7 @@
     let ws = null
     const keyDownSignals = new Map()
     const keyUpSignals = new Map()
+    const img = document.getElementById('img')
     keyDownSignals.set('w', new Uint8Array([1]).buffer)
     keyDownSignals.set('s', new Uint8Array([2]).buffer)
     keyUpSignals.set('w', new Uint8Array([3]).buffer)
@@ -20,8 +21,9 @@
     connect()
 
     function connect() {
-        ws = new WebSocket("ws://" + window.location.host + "/control")
+        ws = new WebSocket("ws://" + "127.0.0.1" + ":6001")
         ws.binaryType = "arraybuffer"
+        ws.onmessage = imgHandler
 
         window.onkeydown = keyDownHandler
         window.onkeyup = keyUpHandler
@@ -39,5 +41,12 @@
             return;
         }
         ws.send(keyUpSignals.get(e.key))
+    }
+
+    function imgHandler(e) {
+        console.log(e.data)
+        let b = new Blob([e.data], {type: 'image/jpeg'})
+        console.log(b.type)
+        img.src = URL.createObjectURL(b)
     }
 })()
