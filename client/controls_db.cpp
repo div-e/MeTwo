@@ -70,11 +70,6 @@ void metwo::init()
 {
     printf("%s\n", "Initializing...");
 
-    if(getuid()!=0) //wiringPi requires root privileges  
-    {  
-        throw std::runtime_error("Error: wiringPi must be run as root.");
-    } 
-
     // Map all pins to GPIO context
     motorA_A_io = mraa_gpio_init(motorA_A);
     motorA_B_io = mraa_gpio_init(motorA_B);
