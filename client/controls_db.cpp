@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "controls.h"
+#include <stdexcept>
+#include "controls.hpp"
 
 #include <mraa/pwm.h>
 #include <mraa/gpio.h>
@@ -65,14 +66,13 @@
 
 /////////////////// INITIALIZER ///////////////////
 // initializes wiringPi and pins
-int init()
+void metwo::init()
 {
     printf("%s\n", "Initializing...");
 
     if(getuid()!=0) //wiringPi requires root privileges  
     {  
-        printf("Error: wiringPi must be run as root.\n");  
-        return 1;  
+        throw std::runtime_error("Error: wiringPi must be run as root.");
     } 
 
     // Map all pins to GPIO context
@@ -105,14 +105,12 @@ int lastCall = STOP;
 void updateMotors(void);
 
     stop();
-    
-    return 0; 
 }
 
 //////////////////// UP and DOWN Tilting methods //////////////
 
 // increments the camera tilt servo by SINC val
-void up() {
+void metwo::up() {
     if(pwmServo_val + PWM_SINC <= PWM_SERVO_MAX) {
         pwmServo_val += PWM_SINC;
     } else {
@@ -123,7 +121,7 @@ void up() {
 }
 
 // decrements the camera tilt servo by SINC val
-void down() {
+void metwo::down() {
     if(pwmServo_val - PWM_SINC >= PWM_SERVO_MIN) {
         pwmServo_val -= PWM_SINC;
     } else {
@@ -136,7 +134,7 @@ void down() {
 //////////////////// FORWARD and BACKWARD METHODS /////////////
 
 // makes the robot go forward 
-void forward()
+void metwo::forward()
 {
     printf("%s\n", "forward");
 
@@ -156,7 +154,7 @@ void forward()
 }
 
 // makes the robot go backward 
-void backward()
+void metwo::backward()
 {
     printf("%s\n", "backward");
 
@@ -177,7 +175,7 @@ void backward()
 }
 
 // turning LEFT means moving motor A faster than motor B 
-void left()
+void metwo::left()
 {
     printf("%s\n", "left");
 
@@ -206,7 +204,7 @@ void left()
 }
 
 // turning RIGHT means moving motor B faster than motor A 
-void right()
+void metwo::right()
 {
     printf("%s\n", "right");
 
@@ -237,7 +235,7 @@ void right()
 ///////////////////// STOPPING METHODS //////////////////
 
 // Stops all motors and sets PWM to 0
-void stop()
+void metwo::stop()
 {
     printf("%s\n", "stop");
 
@@ -257,7 +255,7 @@ void stop()
 }
 
 // Puts robot back into original FORWARD, BACKWARD, or STOP state
-void stop_turning()
+void metwo::stop_turning()
 {
     printf("%s\n", "stop_turning");
 
@@ -273,7 +271,7 @@ void stop_turning()
 }
 
 // Helper method to update the pins to the set global variables
-void updateMotors() 
+void metwo::updateMotors() 
 {
     mraa_pwm_write(motorA_pwm_io, pwmA_val);
     mraa_pwm_write(motorB_pwm_io, pwmB_val);
