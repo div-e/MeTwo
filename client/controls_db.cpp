@@ -271,7 +271,7 @@ void metwo::stop_turning()
 }
 
 // Helper method to update the pins to the set global variables
-void metwo::updateMotors() 
+void updateMotors() 
 {
     mraa_pwm_write(motorA_pwm_io, pwmA_val);
     mraa_pwm_write(motorB_pwm_io, pwmB_val);
