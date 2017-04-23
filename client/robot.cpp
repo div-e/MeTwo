@@ -8,7 +8,7 @@
 #include <exception>
 #include <thread>
 
-#include "controls.h"
+#include "controls.hpp"
 #include "tcp_client.hpp"
 #include "robot.hpp"
 
