@@ -11,7 +11,7 @@ let robot = null
 let browser = null
 let camState = null
 let conState = null
-let frame = Buffer.allocUnsafe(30000)
+let frame = Buffer.allocUnsafe(40000)
 let frameLength = 0
 let copied = 0
 let restBuffer = null
@@ -78,45 +78,36 @@ function robotDisconnectHandler() {
 
 
 function robotMessageHandler(buffer) {
-    if (restBuffer != null)
-    {
+    if (restBuffer != null) {
         concatBuffer(restBuffer)
         restBuffer = null
     }
     concatBuffer(buffer)
 
-    if (browser != null && frameLength == copied)
-    {
+    if (browser != null && frameLength == copied) {
         browser.send(frame.slice(0, frameLength))
     }
 }
 
 
-function concatBuffer(buffer)
-{
-    if (frameLength == copied)
-    {
+function concatBuffer(buffer) {
+    if (frameLength == copied) {
         frameLength = buffer.readUInt16BE(0)
         copied = 0
         buffer = buffer.slice(2);
-
-        console.log('frame len: ' + frameLength)
     }
 
     let slice = frame.slice(copied, frameLength)
-    if (buffer.length <= frameLength - copied)
-    {
+    if (buffer.length <= frameLength - copied) {
         let len = buffer.length
         buffer.copy(slice)
         copied += len
         restBuffer = null
     }
-    else
-    {
+    else {
         let len = frameLength - copied
         buffer.copy(slice, 0, 0, len)
         copied += len
-        buffer.slice(len)
-        restBuffer = buffer;
+        restBuffer = buffer.slice(len)
     }
 }

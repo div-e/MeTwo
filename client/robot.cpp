@@ -87,7 +87,7 @@ void metwo::robot::webcam_thread(shared_ptr<tcp_client> tcp)
 
     vector<int> params;
     params.push_back(cv::IMWRITE_JPEG_QUALITY);
-    params.push_back(20);
+    params.push_back(50);
     vector<unsigned char> buf;
     unsigned char size[2];
 
