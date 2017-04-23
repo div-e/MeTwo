@@ -89,12 +89,17 @@ void metwo::robot::webcam_thread(shared_ptr<tcp_client> tcp)
     params.push_back(cv::IMWRITE_JPEG_QUALITY);
     params.push_back(20);
     vector<unsigned char> buf;
+    unsigned char size[2];
 
     while (true)
     {
         cap.read(frame);
         imencode(".jpg", frame, buf, params);
-        tcp->write(&buf[0], buf.size());
+        int s = buf.size();
+        size[1] = s;
+        size[0] = s >> 8;
+        tcp->write(size, 2);
+        tcp->write(&buf[0], s);
     }
 }
 

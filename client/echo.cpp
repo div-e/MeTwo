@@ -4,48 +4,48 @@
 
 using namespace std;
 
-void init()
+void metwo::init()
 {
     cout << "Initializing\n";
     //throw runtime_error("Failed to initialize");
 }
 
-void forward()
+void metwo::forward()
 {
     cout << "forward\n";
 }
 
-void backward()
+void metwo::backward()
 {
     cout << "backward\n";
 }
 
-void left()
+void metwo::left()
 {
     cout << "left\n";
 }
 
-void right()
+void metwo::right()
 {
     cout << "right\n";
 }
 
-void stop()
+void metwo::stop()
 {
     cout << "stop\n";
 }
 
-void stop_turning()
+void metwo::stop_turning()
 {
     cout << "stop_turning\n";
 }
 
-void up()
+void metwo::up()
 {
     cout << "up\n";
 }
 
-void down()
+void metwo::down()
 {
     cout << "down\n";
 }
