@@ -74,7 +74,7 @@ function robotDisconnectHandler() {
 
 
 function robotMessageHandler(buffer) {
-    console.log(buffer.length)
+    //console.log(buffer.length)
     //fs.writeFileSync("img.jpg", buffer)
     if (browser != null)
     {

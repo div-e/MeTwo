@@ -21,7 +21,7 @@
     connect()
 
     function connect() {
-        ws = new WebSocket("ws://" + "127.0.0.1" + ":6001")
+        ws = new WebSocket("ws://" + window.location.hostname + "/control")
         ws.binaryType = "arraybuffer"
         ws.onmessage = imgHandler
 
