@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <thread>
@@ -26,7 +25,6 @@ void metwo::robot::run()
         cout << "Initialized\nConnecting...\n";
 
         auto tcp = make_shared<tcp_client>(serverAddr, 5000);
-        tcp->connect_server();
         cout << "Connected\n";
 
         thread con(control_thread, tcp);
