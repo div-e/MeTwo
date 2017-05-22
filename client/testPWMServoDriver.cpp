@@ -6,19 +6,27 @@
 #include <unistd.h>
 //#include "mraa/common.hpp"
 #include "mraa.hpp"
+//#include <gpio.h>
 //#include "mraa/i2c.hpp"
 using namespace mraa; 
 using namespace std;
 
-
+//Sorry this code is really messy. But basically what it does is
+//initializes the frequency to a somewhat low value (1000 in this case, 
+//where the range is 0 to 4095). Then it sleeps for 3 seconds. Then
+//wakes up at 2000 and increments by 100 every second or so, also
+//oscillating the dragonboard's pin 23 and 25 on and off. After it reaches
+//3000, it will increment down by 100 again continuing to oscilate the 
+//GPIO pins. 
 MRAA_PWMDriver* pwm;
-
+#define LOW 0
+#define HIGH 1
 
 #define MOTOR_A_1_PIN 23
 #define MOTOR_A_2_PIN 25
 
 #define SERVOMIN 2000
-#define SERVOMAX 4000
+#define SERVOMAX 3000
 
 unsigned int usecs = 999999;
 
@@ -61,10 +69,8 @@ int main() {
 
   mraa::Gpio* motorA_1_gpio = new mraa::Gpio(MOTOR_A_1_PIN); 
   mraa::Gpio* motorA_2_gpio = new mraa::Gpio(MOTOR_A_2_PIN); 
-
-  motorA_1_gpio->write(0);
-  motorA_2_gpio->write(0); 
-
+  motorA_1_gpio->dir(DIR_OUT_LOW);
+  motorA_2_gpio->dir(DIR_OUT_LOW);
 
   mraa::I2c* i2c;
 
@@ -74,11 +80,11 @@ int main() {
 
    pwm->begin(); 
 
-   pwm->setPWMFreq(10000); // Analog servos run at ~60 Hz updates
+   pwm->setPWMFreq(60); // Analog servos run at ~60 Hz updates
    
    printf("servo: %d \n\n", servonum); 
    
-   pwm->setPWM(servonum, 0, 3500);
+   pwm->setPWM(servonum, 0, 1000);
    printf("sleeping for 3 sec. \n");
    usleep(3000000);
    printf("awake now! \n"); 
@@ -86,7 +92,12 @@ int main() {
    for(uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen = pulselen+100) {
        printf("pulselen:  %d \n", pulselen); 
        pwm->setPWM(servonum, 0, pulselen); 
+       motorA_1_gpio->write(HIGH);
+       motorA_2_gpio->write(HIGH); 
        printf("sleep \n"); 
+       usleep(1000000);
+       motorA_1_gpio->write(LOW);
+       motorA_2_gpio->write(LOW); 
        usleep(1000000);
    } 
    
@@ -95,9 +106,14 @@ int main() {
 
    for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen=pulselen-100) {
        printf("pulselen:  %d \n", pulselen); 
-        pwm->setPWM(servonum, 0, pulselen);
+       pwm->setPWM(servonum, 0, pulselen);
+       motorA_1_gpio->write(HIGH);
+       motorA_2_gpio->write(HIGH); 
        printf("sleep \n"); 
-        usleep(1000000);
+       usleep(1000000);
+       motorA_1_gpio->write(LOW);
+       motorA_2_gpio->write(LOW);
+       usleep(1000000);
    }
 
   delete(i2c); 
