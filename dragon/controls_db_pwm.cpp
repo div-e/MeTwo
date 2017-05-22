@@ -1,24 +1,25 @@
-#include <stdio.h>
-#include <stdexcept>
-#include "controls.hpp"
 
-//#include "adafruit-i2c-pwm-driver"
-#include "mraa.h"
-//#include <mraa/pwm.h>
-//#include <mraa/gpio.h>
-#include <errno.h>
+
+
+#include "MRAA_PWMDriver.hpp" 
+
 
 //////////////// VARIABLE DEFINITIONS ////////////////
 
-// Motor Driver Pin declarations (Broadcom pinouts)
-#define motorA_pwm 23 //GPIO12 (Pin 32) for Motor A PWM speed control
-#define motorB_pwm 29 //GPIO26 (Pin 37) for Motor B PWM speed control
-#define motorA_A 25
-#define motorA_B 27 //GPIO06 (Pin 31) for Motor A 02 input
-#define motorB_A 31 //GPIO13 (Pin 33) for Motor B 01 input
-#define motorB_B 33 //GPIO19 (Pin 35) for Motor B 02 input
-#define stdby 24 //GPIO21 (Pin 40) for Standby pin on Motor Driver
-#define servo 26 //GPIO18 (Pin 12) for camera tilt
+// Motor Driver Pin declarations (Dragonboard GPIO Pinouts)
+#define MOTOR_A_1_PIN 23 
+#define MOTOR_A_2_PIN 25
+#define MOTOR_B_1_PIN 24
+#define MOTOR_B_2_PIN 26
+
+#define STANDBY_PIN   27
+
+// Servo Driver Pin declarations (Adafruit PWM I2c Pinouts) 
+#define MOTOR_A_PWM_PIN 0
+#define MOTOR_B_PWM_PIN 1
+#define SERVO_TILT_PWM_PIN 2
+#define SERVO_PAN_PWM_PIN 3
+
 
 // Last call states 
 #define FORWARD 1
@@ -28,8 +29,9 @@
 #define STOP 0
 
 // PWM Constants
-#define PWM_MIN 0 
-#define PWM_MAX 100 
+#define FREQ     60 // Servos run at 60 Hz. DC motor driver doesn't really care.
+#define PWM_MIN  0
+#define PWM_MAX  4095
 #define PWM_SPINC 60 //how high the motors go when FORWARD or BACKWARD
 #define PWM_INC 20 //for turning
 #define PWM_SERVO_MAX 100
