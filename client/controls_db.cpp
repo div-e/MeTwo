@@ -2,8 +2,10 @@
 #include <stdexcept>
 #include "controls.hpp"
 
-#include <mraa/pwm.h>
-#include <mraa/gpio.h>
+//#include "adafruit-i2c-pwm-driver"
+#include "mraa.h"
+//#include <mraa/pwm.h>
+//#include <mraa/gpio.h>
 #include <errno.h>
 
 //////////////// VARIABLE DEFINITIONS ////////////////
@@ -55,6 +57,8 @@
     mraa_gpio_context motorB_A_io;
     mraa_gpio_context motorB_B_io;
     mraa_gpio_context stdby_io;
+
+//    Adafruit_PWMServoDriver servo_pwm_io = Adafruit_PWMServoDriver(0x40);
     mraa_pwm_context servo_io;
     mraa_pwm_context motorA_pwm_io;
     mraa_pwm_context motorB_pwm_io;
@@ -270,6 +274,8 @@ void updateMotors()
 {
     mraa_pwm_write(motorA_pwm_io, pwmA_val);
     mraa_pwm_write(motorB_pwm_io, pwmB_val);
+    mraa_pwm_enable(motorA_pwm_io, 1);
+    mraa_pwm_enable(motorB_pwm_io, 1);
 
     mraa_gpio_write(motorA_A_io, motorA_A_state);
     mraa_gpio_write(motorA_B_io, motorA_B_state);

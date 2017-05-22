@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include "controls.h"
-#include "mraa.h"
-//#include <softPwm.h> 
+
+#include <wiringPi.h> 
+#include <softPwm.h> 
 #include <errno.h>
 
 //////////////// VARIABLE DEFINITIONS ////////////////
@@ -258,8 +259,6 @@ void updateMotors()
 {
     softPwmWrite(motorA_pwm, pwmA_val); 
     softPwmWrite(motorB_pwm, pwmB_val); 
-    mraa_pwm_enable(motorA_pwm, 1);
-    mraa_pwm_enable(motorB_pwm, 1);
 
     digitalWrite(motorA_01, motorA_01_state);
     digitalWrite(motorA_02, motorA_02_state);
