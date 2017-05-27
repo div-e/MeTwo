@@ -28,231 +28,258 @@
 #define LEFT 4
 #define STOP 0
 
-// PWM Constants
-#define FREQ     60 // Servos run at 60 Hz. DC motor driver doesn't really care.
-#define PWM_MIN  0
-#define PWM_MAX  4095
-#define PWM_SPINC 60 //how high the motors go when FORWARD or BACKWARD
-#define PWM_INC 20 //for turning
-#define PWM_SERVO_MAX 100
-#define PWM_SERVO_MIN 25
-#define PWM_SINC 1
-
 //Define LOW and HIGH
 #define LOW  0;
 #define HIGH  1;
 
-    // Default pin modes
-    float pwmA_val = PWM_MIN;
-    float pwmB_val = PWM_MIN;
-    float last_pwmA_val = PWM_MIN;
-    float last_pwmB_val = PWM_MIN;
-    int motorA_A_state = LOW;
-    int motorA_B_state = LOW;
-    int motorB_A_state = LOW;
-    int motorB_B_state = LOW;
-    float pwmServo_val = PWM_MIN;
-    
-    // Map all pins to GPIO context
-    mraa_gpio_context motorA_A_io;
-    mraa_gpio_context motorA_B_io;
-    mraa_gpio_context motorB_A_io;
-    mraa_gpio_context motorB_B_io;
-    mraa_gpio_context stdby_io;
+// PWM Constants
+#define FREQ     60 // Servos run at 60 Hz. DC motor driver doesn't really care.
 
-//    Adafruit_PWMServoDriver servo_pwm_io = Adafruit_PWMServoDriver(0x40);
-    mraa_pwm_context servo_io;
-    mraa_pwm_context motorA_pwm_io;
-    mraa_pwm_context motorB_pwm_io;
+#define PWM_MIN  0
+#define PWM_MAX  4000 // real max is 4095, but to make math nice here... 
+#define SPEED_MIDPOINT 2500
+#define SPEED_INCREMENT 500
 
-    // Default lastCall to STOP
-    int lastCall = STOP;
+#define SERVO_PWM_MIN 100
+#define SERVO_PWM_MAX 200 //BASH (where is max rotation?) may write helper method to wrap.
+#define SERVO_DEFAULT 150 
+#define SERVO_INCREMENT 10
 
-    void updateMotors(void);
+// Global pwm and i2c objects
+MRAA_PWMDriver* pwm;
+mraa::I2c* i2c; 
+
+// Global gpio objects
+mraa::Gpio* motor_A_1_gpio; 
+mraa::Gpio* motor_A_2_gpio;
+mraa::Gpio* motor_B_1_gpio; 
+mraa::Gpio* motor_B_2_gpio; 
+
+// Initial global variables
+int lastCall = STOP; 
+
+int motor_A_pwm_val = PWM_MIN;
+int motor_B_pwm_val = PWM_MAX; 
+int last_motor_A_pwm_val = PWM_MIN;
+int last_motor_B_pwm_val = PWM_MIN; 
+
+int motor_A_1_state = LOW; 
+int motor_A_2_state = LOW; 
+int motor_B_1_state = LOW; 
+int motor_B_2_state = LOW; 
+
+int servo_tilt_pwm_val = SERVO_DEFAULT; 
+int servo_pan_pwm_val = SERVO_DEFAULT; 
+
+// Helper Function Prototypes
+void updateMotors(void);
+int incrementSpeed(int originalSpeed); 
+int decrementSpeed(int originalSpeed); 
+
+
 
 /////////////////// INITIALIZER ///////////////////
 // initializes wiringPi and pins
 void metwo::init()
 {
-    printf("%s\n", "Initializing...");
+  printf("%s\n", "Initializing...");
+  
+  motor_A_1_gpio = new mraa::Gpio(MOTOR_A_1_PIN);
+  motor_A_2_gpio = new mraa::Gpio(MOTOR_A_2_PIN); 
+  motor_B_1_gpio = new mraa::Gpio(MOTOR_B_1_PIN); 
+  motor_B_2_gpio = new mraa::Gpio(MOTOR_B_2_PIN); 
 
-    // Map all pins to GPIO context
-    motorA_A_io = mraa_gpio_init(motorA_A);
-    motorA_B_io = mraa_gpio_init(motorA_B);
-    motorB_A_io = mraa_gpio_init(motorB_A);
-    motorB_B_io = mraa_gpio_init(motorB_B);
-    stdby_io = mraa_gpio_init(stdby);
-    servo_io = mraa_pwm_init(servo);
-    motorA_pwm_io = mraa_pwm_init(motorA_pwm);
-    motorB_pwm_io = mraa_pwm_init(motorB_pwm);
+  motor_A_1_gpio->dir(DIR_OUT_LOW); 
+  motor_A_2_gpio->dir(DIR_OUT_LOW); 
+  motor_B_1_gpio->dir(DIR_OUT_LOW); 
+  motor_B_2_gpio->dir(DIR_OUT_LOW); 
 
+  i2c = new mraa::I2c(0);
 
-    // Set mode/direction for all GPIO context
-    printf("%d",MRAA_SUCCESS==mraa_gpio_dir(motorA_A_io, MRAA_GPIO_OUT_LOW));
-    mraa_gpio_dir(motorA_B_io, MRAA_GPIO_OUT_LOW);
-    mraa_gpio_dir(motorB_A_io, MRAA_GPIO_OUT_LOW);
-    mraa_gpio_dir(motorB_B_io, MRAA_GPIO_OUT_LOW);
-    mraa_gpio_dir(stdby_io, MRAA_GPIO_OUT_HIGH);
-    mraa_pwm_period_us(servo_io, 20);
-    mraa_pwm_pulsewidth_ms(servo_io, 20);
-    mraa_pwm_period_us(motorA_pwm_io, 20);
-    mraa_pwm_pulsewidth_ms(motorA_pwm_io, 20);
-    mraa_pwm_period_us(motorB_pwm_io, 20);
-    mraa_pwm_pulsewidth_ms(motorB_pwm_io, 20);
+  pwm = new MRAA_PWMDriver(DEFAULT_ADDRESS); 
 
-// Default lastCall to STOP
-int lastCall = STOP;
+  pwm->begin(); 
 
-void updateMotors(void);
+  pwm->setPWMFreq(FREQ); 
 
-    stop();
+  updateMotors(); 
 }
 
-//////////////////// UP and DOWN Tilting methods //////////////
 
-// increments the camera tilt servo by SINC val
+
+
+
+
+//////////////////// WEBCAM Tilting Panning methods //////////////
+
+// increments the camera tilt servo by SERVO_INCREMENT
 void metwo::up() {
-    if(pwmServo_val + PWM_SINC <= PWM_SERVO_MAX) {
-        pwmServo_val += PWM_SINC;
-    } else {
-        pwmServo_val = PWM_SERVO_MAX; 
-    }
-    printf("Up was called. Servo val: %d\n", pwmServo_val);
-    mraa_pwm_write(servo_io, pwmServo_val);
+  printf("Up was called. Servo val: %d\n", servo_tilt_pwm_val); 
+  
+  servo_tilt_pwm_val = increment(servo_tilt_pwm_val); 
+
+  updateMotors(); 
 }
 
-// decrements the camera tilt servo by SINC val
+// decrements the camera tilt servo by SERVO_INCREMENT
 void metwo::down() {
-    if(pwmServo_val - PWM_SINC >= PWM_SERVO_MIN) {
-        pwmServo_val -= PWM_SINC;
-    } else {
-        pwmServo_val = PWM_SERVO_MIN; 
-    }
-    printf("Down was called. Servo val: %d\n", pwmServo_val);
-    mraa_pwm_write(servo_io, pwmServo_val);
+  printf("Down was called. Servo val: %d\n", servo_tilt_pwm_val);
+  
+  servo_tilt_pwm_val = decrement(servo_tilt_pwm_val); 
+
+  updateMotors();
 }
 
-//////////////////// FORWARD and BACKWARD METHODS /////////////
+// pans right (increments the pan servo value) 
+void metwo::panRight() {   
+  printf("Pan Right was called. Servo val: %d\n", servo_pan_pwm_val);
+
+  servo_pan_pwm_val = increment(servo_pan_pwm_val); 
+
+  updateMotors(); 
+}
+
+// pans left (decrements the pan servo value) 
+void metwo::panLeft() {
+  printf("Pan Left was called. Servo val: %d\n", servo_pan_pwm_val);
+
+  servo_pan_pwm_val = decrement(servo_pan_pwm_val); 
+
+  updateMotors(); 
+}
+
+
+
+
+
+//////////////////// DRIVING  METHODS /////////////
 
 // makes the robot go forward 
 void metwo::forward()
 {
-    printf("%s\n", "forward");
+  printf("%s\n", "forward");
 
-    pwmA_val = PWM_SPINC; 
-    pwmB_val = PWM_SPINC; 
+  motor_A_1_state = HIGH; 
+  motor_A_2_state = LOW; 
+  motor_B_1_state = HIGH; 
+  motor_B_2_state = LOW; 
 
-    motorA_A_state = LOW;
-    motorA_B_state = HIGH;
-    motorB_A_state = LOW;
-    motorB_B_state = HIGH;
+  motor_A_pwm_val = SPEED_MIDPOINT; 
+  motor_B_pwm_val = SPEED_MIDPOINT; 
 
-    updateMotors();
+  updateMotors();
 
-    last_pwmA_val = pwmA_val;
-    last_pwmB_val = pwmB_val;
-    lastCall = FORWARD;
+  last_motor_A_pwm_val = motor_A_pwm_val; 
+  last_motor_B_pwm_val = motor_B_pwm_val; 
+  lastCall = FORWARD;
 }
 
 // makes the robot go backward 
 void metwo::backward()
 {
-    printf("%s\n", "backward");
+  printf("%s\n", "backward");
 
-    pwmA_val = PWM_SPINC; 
-    pwmB_val = PWM_SPINC; 
+  motor_A_1_state = LOW; 
+  motor_A_2_state = HIGH; 
+  motor_B_1_state = LOW; 
+  motor_B_2_state = HIGH; 
 
-    motorA_A_state = HIGH;
-    motorA_B_state = LOW;
-    motorB_A_state = HIGH;
-    motorB_B_state = LOW;
+  motor_A_pwm_val = SPEED_MIDPOINT; 
+  motor_B_pwm_val = SPEED_MIDPOINT; 
 
-    updateMotors();
+  updateMotors();
 
-    last_pwmA_val= pwmA_val;
-    last_pwmB_val = pwmB_val;
-    lastCall = BACKWARD;
+  last_motor_A_pwm_val = motor_A_pwm_val; 
+  last_motor_B_pwm_val = motor_B_pwm_val; 
+  lastCall = BACKWARD;
     
 }
 
 // turning LEFT means moving motor A faster than motor B 
 void metwo::left()
 {
-    printf("%s\n", "left");
+  printf("%s\n", "left");
 
-    if (lastCall == FORWARD) { 
-        forward();
-        pwmA_val = PWM_SPINC + PWM_INC;
-        pwmB_val = PWM_SPINC - PWM_INC;
-    }
-    else if (lastCall == BACKWARD) {
-        backward();
-        pwmA_val = PWM_SPINC + PWM_INC;
-        pwmB_val = PWM_SPINC - PWM_INC;
-    }
-    else {
-        pwmA_val = PWM_INC * 2;
-        pwmB_val = PWM_MIN;
+  if (lastCall == FORWARD) { 
+    forward();
+    motor_A_pwm_val = increment(SPEED_MIDPOINT); 
+    motor_B_pwm_val = decrement(SPEED_MIDPOINT); 
+  }
+  else if (lastCall == BACKWARD) {
+    backward();
+    motor_A_pwm_val = increment(SPEED_MIDPOINT); 
+    motor_B_pwm_val = decrement(SPEED_MIDPOINT); 
+  }
+  else {
+    // Turn on right wheel pivot
+    motor_A_pwm_val = increment(SPEED_INCREMENT); 
+    motor_B_pwm_val = decrement(SPEED_INCREMENT); 
 
-        //go forward
-        motorA_A_state = LOW;
-        motorA_B_state = HIGH;
-        motorB_A_state = LOW;
-        motorB_B_state = HIGH;
-    }
+    // go forward
+    motor_A_1_val = HIGH;
+    motor_A_2_val = LOW; 
+    motor_B_1_val = HIGH; 
+    motor_B_2_val = LOW; 
+  }
 
-    updateMotors();
+  updateMotors();
+
 }
 
 // turning RIGHT means moving motor B faster than motor A 
 void metwo::right()
 {
-    printf("%s\n", "right");
+  printf("%s\n", "right");
 
-    if (lastCall == FORWARD) { 
-        forward();
-        pwmA_val = PWM_SPINC - PWM_INC;
-        pwmB_val = PWM_SPINC + PWM_INC;
-    }
-    else if (lastCall == BACKWARD) {
-        backward();
-        pwmA_val = PWM_SPINC - PWM_INC;
-        pwmB_val = PWM_SPINC + PWM_INC;
-    }
-    else {
-        pwmA_val = PWM_MIN;
-        pwmB_val = PWM_INC * 2;
+  if (lastCall == FORWARD) { 
+    forward();
+    motor_A_pwm_val = decrement(SPEED_MIDPOINT); 
+    motor_B_pwm_val = increment(SPEED_MIDPOINT); 
+  }
+  else if (lastCall == BACKWARD) {
+    backward();
+    motor_A_pwm_val = decrement(SPEED_MIDPOINT); 
+    motor_B_pwm_val = increment(SPEED_MIDPOINT); 
+  }
+  else {
+    // Turn on right wheel pivot
+    motor_A_pwm_val = decrement(SPEED_INCREMENT); 
+    motor_B_pwm_val = increment(SPEED_INCREMENT); 
 
-        //go forward
-        motorA_A_state = LOW;
-        motorA_B_state = HIGH;
-        motorB_A_state = LOW;
-        motorB_B_state = HIGH;
-    }
+    // go forward
+    motor_A_1_val = HIGH;
+    motor_A_2_val = LOW; 
+    motor_B_1_val = HIGH; 
+    motor_B_2_val = LOW; 
+  }
 
-    updateMotors();
+  updateMotors();
 }
+
+
+
+
 
 ///////////////////// STOPPING METHODS //////////////////
 
 // Stops all motors and sets PWM to 0
 void metwo::stop()
 {
-    printf("%s\n", "stop");
+  printf("%s\n", "stop");
 
-    pwmA_val = PWM_MIN;
-    pwmB_val = PWM_MIN;
+  motor_A_pwm_val = PWM_MIN;
+  motor_B_pwm_val = PWM_MIN;
 
-    motorA_A_state = LOW;
-    motorA_B_state = LOW;
-    motorB_A_state = LOW;
-    motorB_B_state = LOW;
+  motor_A_1_state = LOW;
+  motor_A_2_state = LOW;
+  motor_B_1_state = LOW;
+  motor_B_2_state = LOW;
 
-    updateMotors(); 
+  updateMotors(); 
 
-    last_pwmA_val= pwmA_val;
-    last_pwmB_val = pwmB_val;
-    lastCall = STOP;
+  last_motor_A_pwm_val = motor_A_pwm_val;
+  last_motor_B_pwm_val = motor_B_pwm_val;
+  lastCall = STOP;
 }
 
 // Puts robot back into original FORWARD, BACKWARD, or STOP state
@@ -271,17 +298,71 @@ void metwo::stop_turning()
     }
 }
 
-// Helper method to update the pins to the set global variables
-void updateMotors() 
-{
-    mraa_pwm_write(motorA_pwm_io, pwmA_val);
-    mraa_pwm_write(motorB_pwm_io, pwmB_val);
-    mraa_pwm_enable(motorA_pwm_io, 1);
-    mraa_pwm_enable(motorB_pwm_io, 1);
 
-    mraa_gpio_write(motorA_A_io, motorA_A_state);
-    mraa_gpio_write(motorA_B_io, motorA_B_state);
-    mraa_gpio_write(motorB_A_io, motorB_A_state);
-    mraa_gpio_write(motorB_B_io, motorB_B_state);
+// Close nicely. 
+void terminate(void) {
+  stop(); 
+  delete(pwm);
+  delete(i2c); 
+  delete(motor_A_1_gpio); 
+  delete(motor_A_2_gpio); 
+  delete(motor_B_1_gpio); 
+  delete(motor_B_2_gpio); 
+}
+
+// Helper method to update the pins to the set global variables
+void updateMotors(void) 
+{
+  motor_A_1_gpio->write(motor_A_1_state);
+  motor_A_2_gpio->write(motor_A_2_state);
+  motor_B_1_gpio->write(motor_B_1_state);
+  motor_B_2_gpio->write(motor_B_2_state);
+
+  pwm->setPWM(MOTOR_A_PWM_PIN, 0, motor_A_pwm_val); 
+  pwm->setPWM(MOTOR_B_PWM_PIN, 0, motor_B_pwm_val); 
+  pwm->setPWM(SERVO_TILT_PWM_PIN, 0, servo_tilt_pwm_val);
+  pwm->setPWM(SERVO_PAN_PWM_PIN, 0, servo_pan_pwm_val); 
+}
+
+int incrementSpeed(int originalSpeed) {
+  if(originalSpeed + SPEED_INCREMENT <= PWM_MAX) {
+    originalSpeed += SPEED_INCREMENT; 
+  } else {
+    originalSpeed = PWM_MAX; 
+  }
+
+  return originalSpeed; 
+}
+
+int decrementSpeed(int originalSpeed) {
+  if(originalSpeed - SPEED_INCREMENT >= PWM_MIN) {
+    originalSpeed -= SPEED_INCREMENT; 
+  } else {
+    originalSpeed = PWM_MIN; 
+  }
+
+  return originalSpeed; 
+}
+
+
+int incrementServoPos(int originalServoPos) {
+  if(originalServoPos + SERVO_INCREMENT <= SERVO_PWM_MAX) {
+    originalServoPos += SERVO_INCREMENT; 
+  } else {
+    originalServoPos = SERVO_PWM_MAX; 
+  } 
+
+  return originalServoPos; 
+}
+
+
+int decrementServoPos(int originalServoPos) {
+  if(originalServoPos - SERVO_INCREMENT >= SERVO_PWM_MIN) {
+    originalServoPos -= SERVO_INCREMENT; 
+  } else {
+    originalServoPos = SERVO_PWM_MIN; 
+  } 
+
+  return originalServoPos; 
 }
 

@@ -48,7 +48,7 @@ void setServoPulse(uint8_t n, double pulse) {
 }
 
 int main() {
-  mraa_result_t init_result = mraa_init();
+ /* mraa_result_t init_result = mraa_init();
   if (init_result != MRAA_SUCCESS)
   {
     cout << "ERROR in intialization" <<endl;
@@ -60,7 +60,7 @@ int main() {
   {
     cout << "Not supported platform" << endl;
     return -1;
-  }
+  }*/
 //  string i2c_name = "I2C0";
 //  int i2c_lookup = getI2cBusId(0); 
 //  cout << "getI2cLookup: " << i2c_lookup << endl; 
@@ -76,7 +76,7 @@ int main() {
 
   i2c = new mraa::I2c(0);
 
-   pwm = new MRAA_PWMDriver((uint8_t)0x40); 
+   pwm = new MRAA_PWMDriver(0x40); 
 
    pwm->begin(); 
 
@@ -85,8 +85,8 @@ int main() {
    printf("servo: %d \n\n", servonum); 
    
    pwm->setPWM(servonum, 0, 1000);
-   printf("sleeping for 3 sec. \n");
-   usleep(3000000);
+   printf("sleeping for 5 sec. \n");
+   usleep(5000000);
    printf("awake now! \n"); 
    
    for(uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen = pulselen+100) {

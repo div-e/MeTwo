@@ -27,6 +27,8 @@
 #define ALLLED_OFF_L 0xFC
 #define ALLLED_OFF_H 0xFD
 
+#define DEFAULT_ADDRESS 0x40
+
 
 
 class MRAA_PWMDriver {

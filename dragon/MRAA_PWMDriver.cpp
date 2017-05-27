@@ -9,16 +9,9 @@
  * Adafruit_PWMServoDriver.cpp
  */
 
-//#include <unistd.h>
 #include "MRAA_PWMDriver.hpp"
 #include "mraa.hpp"
 #include "mraa/i2c.hpp"
-	
-/*
-plat->i2c_bus[0].bus_id = 0;
-plat->i2c_bus[0].sda = 17;
-plat->i2c_bus[0].scl = 15;
-*/
 
 /*
  * Function name: MRAA_PWMDriver()
