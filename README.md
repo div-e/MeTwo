@@ -3,8 +3,9 @@ This repository contains the remote control system of the robot.
 
 ## Structure
 - server/ contains the server side code written in javascript.
-- wwwroot contains the web frontend code.
-- RobotClient contains the python client running on the robot.
+- wwwroot/ contains the web frontend code.
+- dragon/ contains the driver program for dragon board.
+- pi/ contains the driver program for pi
 
 ## Usage
 ### 1. Clone this repo
@@ -20,8 +21,8 @@ This repository contains the remote control system of the robot.
 - node index.js
 
 ### 4. Start the robot client
-- cd to client/
-- ./build.sh
+- cd to dragon/ OR pi/
+- ./build_db.sh OR ./build_pi.sh
 - ./a.out ip
 - ip is the server ip address
 
@@ -31,3 +32,7 @@ This repository contains the remote control system of the robot.
 - Authenticate connections
 - Auto-recover from exceptions
 - Better UI
+- Fix paging bug in the streaming server
+- Use libjpeg-turbo to compress image
+- Enable more threads on the robot
+- Auto wifi probing
