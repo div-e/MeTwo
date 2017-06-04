@@ -44,7 +44,7 @@ void metwo::robot::run()
 
 void metwo::robot::control_thread(shared_ptr<tcp_client> tcp)
 {
-    void (*controls[8])(void) = { forward, backward, stop, left, right, stop_turning, up, down };
+    void (*controls[10])(void) = { forward, backward, stop, left, right, stop_turning, up, down, panRight, panLeft };
 
     unsigned char buffer[1];
     while (true)
