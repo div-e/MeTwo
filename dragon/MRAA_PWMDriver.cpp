@@ -68,7 +68,7 @@ void MRAA_PWMDriver::setPWMFreq(float freq) {
 // sets the PWM duty cycle on pin num given on off times. 
 void MRAA_PWMDriver::setPWM(uint8_t num, uint16_t on, uint16_t off) {
 	i2c->address(_i2caddr); 
-	uint8_t buff[5] = {LED0_ON_L + 4*num, (uint8_t)on, (uint8_t)(on>>8), 
+	uint8_t buff[5] = {(uint8_t)(LED0_ON_L + 4*num), (uint8_t)on, (uint8_t)(on>>8), 
     (uint8_t)off, (uint8_t)(off>>8)}; 
   
 	i2c->write(buff, 5); // write all the data also ends the connection. 

@@ -1,8 +1,12 @@
 
 
 
-#include "MRAA_PWMDriver.hpp" 
+#include "MRAA_PWMDriver.hpp"
+#include "mraa.hpp"
+#include "controls.hpp"
 
+using namespace mraa;
+using namespace metwo;
 
 //////////////// VARIABLE DEFINITIONS ////////////////
 
@@ -29,8 +33,8 @@
 #define STOP 0
 
 //Define LOW and HIGH
-#define LOW  0;
-#define HIGH  1;
+#define LOW  0
+#define HIGH  1
 
 // PWM Constants
 #define FREQ     60 // Servos run at 60 Hz. DC motor driver doesn't really care.
@@ -75,11 +79,11 @@ int servo_pan_pwm_val = SERVO_DEFAULT;
 void updateMotors(void);
 int incrementSpeed(int originalSpeed); 
 int decrementSpeed(int originalSpeed); 
-
+int incrementServoPos(int originalServoPos); 
+int decrementServoPos(int originalServoPos);
 
 
 /////////////////// INITIALIZER ///////////////////
-// initializes wiringPi and pins
 void metwo::init()
 {
   printf("%s\n", "Initializing...");
@@ -116,7 +120,7 @@ void metwo::init()
 void metwo::up() {
   printf("Up was called. Servo val: %d\n", servo_tilt_pwm_val); 
   
-  servo_tilt_pwm_val = increment(servo_tilt_pwm_val); 
+  servo_tilt_pwm_val = incrementServoPos(servo_tilt_pwm_val); 
 
   updateMotors(); 
 }
@@ -125,7 +129,7 @@ void metwo::up() {
 void metwo::down() {
   printf("Down was called. Servo val: %d\n", servo_tilt_pwm_val);
   
-  servo_tilt_pwm_val = decrement(servo_tilt_pwm_val); 
+  servo_tilt_pwm_val = decrementServoPos(servo_tilt_pwm_val); 
 
   updateMotors();
 }
@@ -134,7 +138,7 @@ void metwo::down() {
 void metwo::panRight() {   
   printf("Pan Right was called. Servo val: %d\n", servo_pan_pwm_val);
 
-  servo_pan_pwm_val = increment(servo_pan_pwm_val); 
+  servo_pan_pwm_val = incrementServoPos(servo_pan_pwm_val); 
 
   updateMotors(); 
 }
@@ -143,7 +147,7 @@ void metwo::panRight() {
 void metwo::panLeft() {
   printf("Pan Left was called. Servo val: %d\n", servo_pan_pwm_val);
 
-  servo_pan_pwm_val = decrement(servo_pan_pwm_val); 
+  servo_pan_pwm_val = decrementServoPos(servo_pan_pwm_val); 
 
   updateMotors(); 
 }
@@ -202,24 +206,24 @@ void metwo::left()
 
   if (lastCall == FORWARD) { 
     forward();
-    motor_A_pwm_val = increment(SPEED_MIDPOINT); 
-    motor_B_pwm_val = decrement(SPEED_MIDPOINT); 
+    motor_A_pwm_val = incrementSpeed(SPEED_MIDPOINT); 
+    motor_B_pwm_val = decrementSpeed(SPEED_MIDPOINT); 
   }
   else if (lastCall == BACKWARD) {
     backward();
-    motor_A_pwm_val = increment(SPEED_MIDPOINT); 
-    motor_B_pwm_val = decrement(SPEED_MIDPOINT); 
+    motor_A_pwm_val = incrementSpeed(SPEED_MIDPOINT); 
+    motor_B_pwm_val = decrementSpeed(SPEED_MIDPOINT); 
   }
   else {
     // Turn on right wheel pivot
-    motor_A_pwm_val = increment(SPEED_INCREMENT); 
-    motor_B_pwm_val = decrement(SPEED_INCREMENT); 
+    motor_A_pwm_val = incrementSpeed(SPEED_INCREMENT); 
+    motor_B_pwm_val = decrementSpeed(SPEED_INCREMENT); 
 
     // go forward
-    motor_A_1_val = HIGH;
-    motor_A_2_val = LOW; 
-    motor_B_1_val = HIGH; 
-    motor_B_2_val = LOW; 
+    motor_A_1_state = HIGH;
+    motor_A_2_state = LOW; 
+    motor_B_1_state = HIGH; 
+    motor_B_2_state = LOW; 
   }
 
   updateMotors();
@@ -233,24 +237,24 @@ void metwo::right()
 
   if (lastCall == FORWARD) { 
     forward();
-    motor_A_pwm_val = decrement(SPEED_MIDPOINT); 
-    motor_B_pwm_val = increment(SPEED_MIDPOINT); 
+    motor_A_pwm_val = decrementSpeed(SPEED_MIDPOINT); 
+    motor_B_pwm_val = incrementSpeed(SPEED_MIDPOINT); 
   }
   else if (lastCall == BACKWARD) {
     backward();
-    motor_A_pwm_val = decrement(SPEED_MIDPOINT); 
-    motor_B_pwm_val = increment(SPEED_MIDPOINT); 
+    motor_A_pwm_val = decrementSpeed(SPEED_MIDPOINT); 
+    motor_B_pwm_val = incrementSpeed(SPEED_MIDPOINT); 
   }
   else {
     // Turn on right wheel pivot
-    motor_A_pwm_val = decrement(SPEED_INCREMENT); 
-    motor_B_pwm_val = increment(SPEED_INCREMENT); 
+    motor_A_pwm_val = decrementSpeed(SPEED_INCREMENT); 
+    motor_B_pwm_val = incrementSpeed(SPEED_INCREMENT); 
 
     // go forward
-    motor_A_1_val = HIGH;
-    motor_A_2_val = LOW; 
-    motor_B_1_val = HIGH; 
-    motor_B_2_val = LOW; 
+    motor_A_1_state = HIGH;
+    motor_A_2_state = LOW; 
+    motor_B_1_state = HIGH; 
+    motor_B_2_state = LOW; 
   }
 
   updateMotors();
