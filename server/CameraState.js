@@ -1,3 +1,5 @@
+"use strict" 
+
 const State = require('./State')
 const Signals = require('./Signals')
 

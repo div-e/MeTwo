@@ -1,3 +1,5 @@
+"use strict" 
+
 const CameraState = require('./CameraState');
 const ControlState = require('./ControlState');
 const Signals = require('./Signals');

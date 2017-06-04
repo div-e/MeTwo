@@ -88,10 +88,15 @@ void metwo::init()
 {
   printf("%s\n", "Initializing...");
   
-  motor_A_1_gpio = new mraa::Gpio(MOTOR_A_1_PIN);
+  printf("h\n");
+  motor_A_1_gpio = new mraa::Gpio(24);//MOTOR_A_1_PIN);
+  printf("hi\n");
   motor_A_2_gpio = new mraa::Gpio(MOTOR_A_2_PIN); 
+  printf("hii\n");
   motor_B_1_gpio = new mraa::Gpio(MOTOR_B_1_PIN); 
+  printf("hiii\n");
   motor_B_2_gpio = new mraa::Gpio(MOTOR_B_2_PIN); 
+  printf("hiiii\n");
 
   motor_A_1_gpio->dir(DIR_OUT_LOW); 
   motor_A_2_gpio->dir(DIR_OUT_LOW); 

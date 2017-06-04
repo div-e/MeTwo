@@ -1,3 +1,5 @@
+"use strict"
+
 const WebSocket = require('ws')
 const net = require('net')
 const Robot = require('./Robot');

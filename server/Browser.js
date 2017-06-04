@@ -1,3 +1,4 @@
+"use strict"
 module.exports = class Browser {
     constructor(ws, broadcast, cleanUp) {
         ws.on('message', broadcast);
