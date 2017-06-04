@@ -11,6 +11,10 @@ exports.UP = 9
 exports.DOWN = 10
 exports.STOP_U = 11
 exports.STOP_D = 12
+exports.PAN_RIGHT = 13
+exports.PAN_LEFT = 14
+exports.STOP_PAN_RIGHT = 15
+exports.STOP_PAN_LEFT = 16
 
 
 
@@ -22,7 +26,10 @@ const right = 5
 const stop_turning = 6
 const up = 7
 const down = 8
-const map = new Uint8Array(11)
+const panRight = 9
+const panLeft = 10
+
+const map = new Uint8Array(13)
 map[exports.FORWARD] = forward
 map[exports.BACKWARD] = backward
 map[exports.STOP_F] = stop
@@ -33,6 +40,8 @@ map[exports.STOP_L] = stop_turning
 map[exports.STOP_R] = stop_turning
 map[exports.UP] = up
 map[exports.DOWN] = down
+map[exports.PAN_RIGHT] = panRight
+map[exports.PAN_LEFT] = panLeft
 
 
 

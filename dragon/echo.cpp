@@ -49,3 +49,13 @@ void metwo::down()
 {
     cout << "down\n";
 }
+
+void metwo::panRight() 
+{
+    cout << "panRight\n";
+}
+
+void metwo::panLeft() 
+{
+    cout << "panLeft\n";
+}

@@ -10,6 +10,8 @@ module.exports = class CameraState extends State {
         super()
         this.up = false
         this.down = false
+	this.panRight = false
+	this.panLeft = false
     }
 
 
@@ -42,6 +44,38 @@ module.exports = class CameraState extends State {
             }
             return false
         }
+	else if(flag === Signals.PAN_RIGHT) {
+		if(this.panRight || this.panLeft) {
+			return false
+		} else {
+			this.panRight = true
+			return true
+		}
+	} 
+	else if(flag === Signals.STOP_PAN_RIGHT) {
+		if(this.panRight) {
+			this.panRight = false
+			return true
+		} else {
+			return false
+		}
+	}
+	else if(flag === Signals.PAN_LEFT) {
+		if(this.panRight || this.panLeft) {
+			return false
+		} else {
+			this.panLeft = true
+			return true
+		}
+	}
+	else if(flag === Signals.STOP_PAN_LEFT) {
+		if(this.panLeft) {
+			this.panLeft = false
+			return true
+		} else {
+			return false
+		}
+	}
 
         return false
     }

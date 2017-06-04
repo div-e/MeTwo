@@ -41,12 +41,12 @@ using namespace metwo;
 
 #define PWM_MIN  0
 #define PWM_MAX  4000 // real max is 4095, but to make math nice here... 
-#define SPEED_MIDPOINT 2500
-#define SPEED_INCREMENT 500
+#define SPEED_MIDPOINT 3000
+#define SPEED_INCREMENT 700
 
-#define SERVO_PWM_MIN 100
-#define SERVO_PWM_MAX 200 //BASH (where is max rotation?) may write helper method to wrap.
-#define SERVO_DEFAULT 150 
+#define SERVO_PWM_MIN 200
+#define SERVO_PWM_MAX 600 //BASH (where is max rotation?) may write helper method to wrap.
+#define SERVO_DEFAULT 450 
 #define SERVO_INCREMENT 10
 
 // Global pwm and i2c objects

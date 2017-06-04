@@ -17,6 +17,11 @@
     keyDownSignals.set('k', new Uint8Array([10]).buffer)
     keyUpSignals.set('i', new Uint8Array([11]).buffer)
     keyUpSignals.set('k', new Uint8Array([12]).buffer)
+    keyDownSignals.set('j', new Uint8Array([13]).buffer)
+    keyDownSignals.set('l', new Uint8Array([14]).buffer)
+    keyUpSignals.set('j', new Uint8Array([15]).buffer)
+    keyUpSignals.set('l', new Uint8Array([16]).buffer)
+
 
     connect()
 
