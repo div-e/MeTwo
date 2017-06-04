@@ -26,11 +26,13 @@ This repository contains the remote control system of the robot.
   	- Need to install ws package
 	  http://websockets.github.io/ws/
 	- "use strict" for all the .js files in server/
+	- Need to sudo
 
 ### 4. Start the robot client
 - cd to dragon/ OR pi/
 - ./build_db.sh OR ./build_pi.sh
 - ./a.out ip
+  - Need to sudo
 - ip is the server ip address
 
 ### 5. Open a browser and navigate to the server address

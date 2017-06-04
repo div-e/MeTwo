@@ -24,16 +24,16 @@ void metwo::robot::run()
         init();
         cout << "Initialized\nConnecting...\n";
 
-        auto tcp = make_shared<tcp_client>(serverAddr, 5000);
+        auto tcp = make_shared<tcp_client>(serverAddr, 6000);
         cout << "Connected\n";
 
         thread con(control_thread, tcp);
-        thread cam(webcam_thread, tcp);
+        //thread cam(webcam_thread, tcp);
 
         con.join();
         cout << "Control thread started\n";
-        cam.join();
-        cout << "Webcam thread started\n";
+        //cam.join();
+        //cout << "Webcam thread started\n";
     }
     catch (exception& ex)
     {

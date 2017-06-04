@@ -89,7 +89,7 @@ void metwo::init()
   printf("%s\n", "Initializing...");
   
   printf("h\n");
-  motor_A_1_gpio = new mraa::Gpio(24);//MOTOR_A_1_PIN);
+  motor_A_1_gpio = new mraa::Gpio(MOTOR_A_1_PIN);
   printf("hi\n");
   motor_A_2_gpio = new mraa::Gpio(MOTOR_A_2_PIN); 
   printf("hii\n");
@@ -112,6 +112,7 @@ void metwo::init()
   pwm->setPWMFreq(FREQ); 
 
   updateMotors(); 
+  printf("done initializing\n");
 }
 
 
