@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "controls.h"
+#include "controls.hpp"
 
 #include <wiringPi.h> 
 #include <softPwm.h> 

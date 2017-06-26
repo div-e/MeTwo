@@ -6,8 +6,23 @@ project(dragon)
 include_directories(/usr/local/include/)
 LINK_DIRECTORIES(/usr/local/lib/)
 
+# dependency
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-add_executable(MainProject MRAA_PWMDriver.cpp testPWMServoDriver.cpp )
+find_package( Threads REQUIRED )
 
-TARGET_LINK_LIBRARIES(dragon mraa)
+# include files
+file(GLOB C_SOURCES *.c)
+file(GLOB CXX_SOURCES *.cpp)
+
+# compile flags
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+# compile
+add_executable(dragon main.cpp robot.cpp echo.cpp tcp_client.cpp ${C_SOURCES})
+
+# link
+TARGET_LINK_LIBRARIES(dragon mraa ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
 

@@ -45,3 +45,23 @@ This repository contains the remote control system of the robot.
 - Use libjpeg-turbo to compress image
 - Enable more threads on the robot
 - Auto wifi probing
+
+
+## compile dependency
+cmake, swig, pkgconfig, pthreads
+
+## prepare environment
+'''
+./bootstrap [with cmake configure option here]
+'''
+
+## compile 
+'''
+cd dragon
+mkdir build
+cd build
+cmake ..
+'''
+
+## run
+sudo LD_LIBRARY_PATH=/usr/local/lib [command]
