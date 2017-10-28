@@ -21,7 +21,7 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # compile
-add_executable(dragon main.cpp robot.cpp echo.cpp tcp_client.cpp ${C_SOURCES})
+add_executable(dragon main.cpp robot.cpp controls_db_pwm.cpp tcp_client.cpp MRAA_PWMDriver.cpp ${C_SOURCES})
 
 # link
 TARGET_LINK_LIBRARIES(dragon mraa ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT} )
