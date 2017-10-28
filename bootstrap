@@ -1,6 +1,10 @@
-#!/bin/bash
+#!/bin/sh
+
+
 
 rm -r /wwwroot
 cp -r ./wwwroot /
 cp ./nginx.conf /etc/nginx/
 nginx -s reload
+
+deploy/deploy.sh
