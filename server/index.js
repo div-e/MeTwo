@@ -5,19 +5,27 @@ const net = require('net')
 const Robot = require('./Robot');
 const Browser = require('./Browser');
 
+var express = require('express');
 
-//let robot = null
-//let browser = null;
-//let camState = null
-//let conState = null
-// let frame = Buffer.allocUnsafe(40000)
-// let frameLength = 0
-// let copied = 0
-// let restBuffer = null
+// we need to guantee the web page is running
+let app = express()
+
+app.use(express.static('./pages'));
+
+app.get('/index.html', function (req, res) {
+    res.sendFile('pages/index.html');
+})
+
+app.get('/script.js', function (req, res) {
+   res.sendFile('pages/script.js');
+})
+app.listen(3000);
+
+console.log("Running at Port 3000");
+
+
 let robot = null;
 let browser = null;
-
-
 
 const tcpServer = net.createServer(socket => {
     robot = new Robot(socket, buffer => {
