@@ -1,11 +1,13 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "metwo",
   "main": "index.js",
   "author": "Sui Gao",
   "license": "MIT",
+  "repository": "https://github.com/MeTwo-UCSD/MeTwo",
   "dependencies": {
+    "express": "^4.16.2",
     "ws": "^2.2.2"
   }
 }
