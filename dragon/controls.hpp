@@ -1,8 +1,8 @@
 namespace metwo
 {
     void init();
-    void up();
-    void down();
+    void tiltUp();
+    void tiltDown();
     void panRight(); 
     void panLeft(); 
     void forward();

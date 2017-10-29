@@ -40,12 +40,12 @@ void metwo::stop_turning()
     cout << "stop_turning\n";
 }
 
-void metwo::up()
+void metwo::tiltUp()
 {
     cout << "up\n";
 }
 
-void metwo::down()
+void metwo::tiltDown()
 {
     cout << "down\n";
 }

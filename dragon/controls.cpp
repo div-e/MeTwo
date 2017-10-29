@@ -1,5 +1,9 @@
-
-
+/*
+ * Filename: controls.cpp
+ * Contributors: Geeling Chau
+ * Description: This code controls the GPIO and I2C data pins that will control
+ * the robot drive and pan/tilt functionalities. 
+ */
 
 #include "MRAA_PWMDriver.hpp"
 #include "mraa.hpp"
@@ -8,7 +12,7 @@
 using namespace mraa;
 using namespace metwo;
 
-//////////////// VARIABLE DEFINITIONS ////////////////
+//////////////////////////// VARIABLE DEFINITIONS //////////////////////////////
 
 // Motor Driver Pin declarations (Dragonboard GPIO Pinouts)
 #define MOTOR_A_1_PIN 23 
@@ -45,7 +49,7 @@ using namespace metwo;
 #define SPEED_INCREMENT 700
 
 #define SERVO_PWM_MIN 200
-#define SERVO_PWM_MAX 600 //BASH (where is max rotation?) may write helper method to wrap.
+#define SERVO_PWM_MAX 600 
 #define SERVO_DEFAULT 450 
 #define SERVO_INCREMENT 10
 
@@ -83,20 +87,15 @@ int incrementServoPos(int originalServoPos);
 int decrementServoPos(int originalServoPos);
 
 
-/////////////////// INITIALIZER ///////////////////
+///////////////////////////////// INITIALIZER //////////////////////////////////
 void metwo::init()
 {
   printf("%s\n", "Initializing...");
   
-  printf("h\n");
   motor_A_1_gpio = new mraa::Gpio(MOTOR_A_1_PIN);
-  printf("hi\n");
   motor_A_2_gpio = new mraa::Gpio(MOTOR_A_2_PIN); 
-  printf("hii\n");
   motor_B_1_gpio = new mraa::Gpio(MOTOR_B_1_PIN); 
-  printf("hiii\n");
   motor_B_2_gpio = new mraa::Gpio(MOTOR_B_2_PIN); 
-  printf("hiiii\n");
 
   motor_A_1_gpio->dir(DIR_OUT_LOW); 
   motor_A_2_gpio->dir(DIR_OUT_LOW); 
@@ -123,7 +122,7 @@ void metwo::init()
 //////////////////// WEBCAM Tilting Panning methods //////////////
 
 // increments the camera tilt servo by SERVO_INCREMENT
-void metwo::up() {
+void metwo::tiltUp() {
   printf("Up was called. Servo val: %d\n", servo_tilt_pwm_val); 
   
   servo_tilt_pwm_val = incrementServoPos(servo_tilt_pwm_val); 
@@ -132,7 +131,7 @@ void metwo::up() {
 }
 
 // decrements the camera tilt servo by SERVO_INCREMENT
-void metwo::down() {
+void metwo::tiltDown() {
   printf("Down was called. Servo val: %d\n", servo_tilt_pwm_val);
   
   servo_tilt_pwm_val = decrementServoPos(servo_tilt_pwm_val); 
@@ -162,7 +161,7 @@ void metwo::panLeft() {
 
 
 
-//////////////////// DRIVING  METHODS /////////////
+//////////////////////////// DRIVING  METHODS //////////////////////////////////
 
 // makes the robot go forward 
 void metwo::forward()
@@ -270,7 +269,7 @@ void metwo::right()
 
 
 
-///////////////////// STOPPING METHODS //////////////////
+/////////////////////////////// STOPPING METHODS ///////////////////////////////
 
 // Stops all motors and sets PWM to 0
 void metwo::stop()
@@ -334,6 +333,14 @@ void updateMotors(void)
   pwm->setPWM(SERVO_PAN_PWM_PIN, 0, servo_pan_pwm_val); 
 }
 
+/**
+ * incrementSpeed() returns the incremented speed of the given speed by 
+ * SPEED_INCREMENT. Checks for whether or not the the increment will be outside
+ * of the max specified by the PWM_MAX constant. 
+ *
+ * @param int originalSpeed The original speed
+ * @return int theNewSpeed The incremented speed
+ */
 int incrementSpeed(int originalSpeed) {
   if(originalSpeed + SPEED_INCREMENT <= PWM_MAX) {
     originalSpeed += SPEED_INCREMENT; 
@@ -344,6 +351,14 @@ int incrementSpeed(int originalSpeed) {
   return originalSpeed; 
 }
 
+/**
+ * decrementSpeed() returns the decremented speed of the given speed by 
+ * SPEED_INCREMENT. Checks for whether or not the increment will be outside of 
+ * the min specified by the PWM_MIN constant. 
+ *
+ * @param int originalSpeed The original speed
+ * @return int theNewSpeed The decremented speed
+ */
 int decrementSpeed(int originalSpeed) {
   if(originalSpeed - SPEED_INCREMENT >= PWM_MIN) {
     originalSpeed -= SPEED_INCREMENT; 
@@ -355,6 +370,14 @@ int decrementSpeed(int originalSpeed) {
 }
 
 
+/**
+ * incrementServoPos() returns the incremented value of a given original servo
+ * position. Checks for whether or not the incremented value is within 
+ * SERVO_PWM_MAX. 
+ *
+ * @param int originalServoPos The original servo position to increment
+ * @return int theNewServoPos The incremented servo position value
+ */
 int incrementServoPos(int originalServoPos) {
   if(originalServoPos + SERVO_INCREMENT <= SERVO_PWM_MAX) {
     originalServoPos += SERVO_INCREMENT; 
@@ -366,6 +389,14 @@ int incrementServoPos(int originalServoPos) {
 }
 
 
+/**
+ * decrementServoPos() returns the decremented value of a given original servo
+ * position. Checks for whether or not the incremented value is within 
+ * SERVO_PWM_MIN. 
+ *
+ * @param int originalServoPos The original servo position to decrement
+ * @return int theNewServoPos The decremented servo position value
+ */
 int decrementServoPos(int originalServoPos) {
   if(originalServoPos - SERVO_INCREMENT >= SERVO_PWM_MIN) {
     originalServoPos -= SERVO_INCREMENT; 
