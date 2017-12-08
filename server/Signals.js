@@ -49,8 +49,6 @@ map[exports.STOP_PAN_LEFT] = stop
 //this array maps to the keyUpSignals + keyDownSignals array in script.js
 
 // map is an array of size 13
-// why on earth are we trying to assign panRight and panLeft to map[13] and map[14]
-// what the heck is this guy thinking
 
 
 

@@ -72,8 +72,6 @@ module.exports = class ControlState extends State {
             }
             return false
         }
-        // WTF IS WRONG WITH YOU
-        //TODO ADD CASES FOR UP THROUGH STOP_PAN_LEFT IN SIGNALS.JS EXPORTS
         return false
     }
 
