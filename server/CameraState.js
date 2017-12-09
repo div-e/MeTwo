@@ -60,7 +60,7 @@ module.exports = class CameraState extends State {
             return true
           }
         }
-
+/*
         else if(flag === Signals.STOP_PAN_RIGHT) {
           if(this.panRight) {
             this.panRight = false
@@ -77,7 +77,7 @@ module.exports = class CameraState extends State {
             return false
           }
       	}
-
+*/
 
         return false
     }
@@ -89,7 +89,6 @@ module.exports = class CameraState extends State {
         if (!this.validate(flag)) {
             return
         }
-//TODO I THINK THIS IS WHERE OUR PROBLEM LIES.
         if (flag <= Signals.STOP_PAN_LEFT) {
             Signals.map(buffer)
             super.redirect(buffer, socket)
