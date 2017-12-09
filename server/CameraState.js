@@ -1,4 +1,4 @@
-"use strict" 
+"use strict"
 
 const State = require('./State')
 const Signals = require('./Signals')
@@ -28,6 +28,7 @@ module.exports = class CameraState extends State {
             this.down = true
             return true
         }
+        
         else if (flag === Signals.STOP_U) {
             if (this.up) {
                 this.up = false
@@ -42,6 +43,7 @@ module.exports = class CameraState extends State {
             }
             return false
         }
+
         else if(flag === Signals.PAN_RIGHT) {
           if(this.panRight || this.panLeft) {
             return false
@@ -49,7 +51,7 @@ module.exports = class CameraState extends State {
             this.panRight = true
             return true
           }
-        } 
+        }
         else if(flag === Signals.PAN_LEFT) {
           if(this.panRight || this.panLeft) {
             return false
@@ -58,6 +60,7 @@ module.exports = class CameraState extends State {
             return true
           }
         }
+
         else if(flag === Signals.STOP_PAN_RIGHT) {
           if(this.panRight) {
             this.panRight = false
@@ -75,6 +78,7 @@ module.exports = class CameraState extends State {
           }
       	}
 
+
         return false
     }
 
@@ -85,8 +89,8 @@ module.exports = class CameraState extends State {
         if (!this.validate(flag)) {
             return
         }
-//TODO I THINK THIS IS WHERE OUR PROBLEM LIES. 
-        if (flag <= Signals.DOWN) {
+//TODO I THINK THIS IS WHERE OUR PROBLEM LIES.
+        if (flag <= Signals.STOP_PAN_LEFT) {
             Signals.map(buffer)
             super.redirect(buffer, socket)
             this.interval = setInterval(() => {

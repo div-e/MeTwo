@@ -11,8 +11,8 @@ exports.UP = 9
 exports.DOWN = 10
 exports.STOP_U = 11
 exports.STOP_D = 12
-exports.PAN_RIGHT = 11
-exports.PAN_LEFT = 12
+exports.PAN_RIGHT = 13
+exports.PAN_LEFT = 14
 exports.STOP_PAN_RIGHT = 15
 exports.STOP_PAN_LEFT = 16
 
