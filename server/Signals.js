@@ -16,50 +16,42 @@ exports.PAN_LEFT = 14
 exports.STOP_PAN_RIGHT = 15
 exports.STOP_PAN_LEFT = 16*/
 
-
-//Signals Enum
-var exports.browserSignals = {
-        W_KEY_UP: 0, 
-        W_KEY_DOWN: 1,
-        A_KEY_UP: 2,
-        A_KEY_DOWN: 3,
-        S_KEY_UP: 4, 
-        S_KEY_DOWN: 5, 
-        D_KEY_UP: 6,
-        D_KEY_DOWN: 7, 
-        I_KEY_UP: 8,
-        I_KEY_DOWN: 9, 
-        K_KEY_UP: 10, 
-        K_KEY_DOWN: 11,
-        J_KEY_UP: 12,
-        J_KEY_DOWN: 13,
-        L_KEY_UP: 14,
-        L_KEY_DOWN: 15
-}
+import Script from './pages/script.js'
 
 // Function Enum
 var robotFunctions = {
         FORWARD: 0,
-        BACKWARD: 1, 
-        STOP: 2, 
-        LEFT: 3, 
-        RIGHT: 4, 
+        BACKWARD: 1,
+        STOP: 2,
+        LEFT: 3,
+        RIGHT: 4,
         STOP_TURNING: 5,
-        TILT_UP: 6, 
-        TILT_DOWN: 7, 
-        PAN_RIGHT: 8, 
+        TILT_UP: 6,
+        TILT_DOWN: 7,
+        PAN_RIGHT: 8,
         PAN_LEFT: 9
-} 
+}
 
 const map = new Uint8Array(17)
-map[browserSignals.W_KEY_DOWN] = robotFunctions.FORWARD;
-map[browserSignals.W_KEY_UP] = robotFunctions.STOP;
-map[browserSignals.S_KEY_DOWN] = robotFunctions.BACKWARD;
-map[browserSignals.S_KEY_UP] = robotFunctions.STOP;
-map[browserSignals.A_KEY_DOWN] = robotFunctions.LEFT;
-map[browserSignals.A_KEY_UP] = robotFunctions.STOP_TURNING;
-map[browserSignals.D_KEY_DOWN] = robotFunctions.RIGHT;
-map[browserSignals.D_KEY_UP] = robotFunctions.STOP_TURNING;
+map[Script.browserSignals.W_KEY_DOWN] = robotFunctions.FORWARD;
+map[Script.browserSignals.W_KEY_UP] = robotFunctions.STOP;
+map[Script.browserSignals.S_KEY_DOWN] = robotFunctions.BACKWARD;
+map[Script.browserSignals.S_KEY_UP] = robotFunctions.STOP;
+map[Script.browserSignals.A_KEY_DOWN] = robotFunctions.LEFT;
+map[Script.browserSignals.A_KEY_UP] = robotFunctions.STOP_TURNING;
+map[Script.browserSignals.D_KEY_DOWN] = robotFunctions.RIGHT;
+map[Script.browserSignals.D_KEY_UP] = robotFunctions.STOP_TURNING;
+
+map[Script.browserSignals.I_KEY_DOWN] = robotFunctions.TILT_UP;
+map[Script.browserSignals.I_KEY_UP] = robotFunctions.TILT_UP;
+map[Script.browserSignals.K_KEY_DOWN] = robotFunctions.TILT_DOWN;
+map[Script.browserSignals.K_KEY_UP] = robotFunctions.TILT_DOWN;
+map[Script.browserSignals.J_KEY_DOWN] = robotFunctions.PAN_LEFT;
+map[Script.browserSignals.J_KEY_UP] = robotFunctions.PAN_LEFT;
+map[Script.browserSignals.L_KEY_DOWN] = robotFunctions.PAN_RIGHT;
+map[Script.browserSignals.L_KEY_UP] = robotFunctions.PAN_RIGHT;
+
+/*
 map[exports.BACKWARD] = backward
 map[exports.STOP_F] = stop
 map[exports.STOP_B] = stop
@@ -75,6 +67,7 @@ map[exports.PAN_RIGHT] = panRight
 map[exports.PAN_LEFT] = panLeft
 map[exports.STOP_PAN_RIGHT] = stop
 map[exports.STOP_PAN_LEFT] = stop
+*/
 //this array maps to the keyUpSignals + keyDownSignals array in script.js
 
 // map is an array of size 13
