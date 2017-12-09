@@ -2,6 +2,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "tcp_client.hpp"
+#include <iostream>
 
 using namespace std;
 
