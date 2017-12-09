@@ -24,12 +24,12 @@ const stop = 3
 const left = 4
 const right = 5
 const stop_turning = 6
-const up = 7
-const down = 8
+const tiltUp = 7
+const tiltDown = 8
 const panRight = 9
 const panLeft = 10
 
-const map = new Uint8Array(13)
+const map = new Uint8Array(17)
 map[exports.FORWARD] = forward
 map[exports.BACKWARD] = backward
 map[exports.STOP_F] = stop
@@ -38,10 +38,17 @@ map[exports.LEFT] = left
 map[exports.RIGHT] = right
 map[exports.STOP_L] = stop_turning
 map[exports.STOP_R] = stop_turning
-map[exports.UP] = up
-map[exports.DOWN] = down
+map[exports.UP] = tiltUp
+map[exports.DOWN] = tiltDown
+map[exports.STOP_U] = stop
+map[exports.STOP_D] = stop
 map[exports.PAN_RIGHT] = panRight
 map[exports.PAN_LEFT] = panLeft
+map[exports.STOP_PAN_RIGHT] = stop
+map[exports.STOP_PAN_LEFT] = stop
+//this array maps to the keyUpSignals + keyDownSignals array in script.js
+
+// map is an array of size 13
 
 
 

@@ -44,8 +44,7 @@ void metwo::robot::run()
 
 void metwo::robot::control_thread(shared_ptr<tcp_client> tcp)
 {
-    void (*controls[10])(void) = { forward, backward, stop, left, right, stop_turning, tiltUp, tiltDown, panRight, panLeft};
-
+    void (*controls[12])(void) = { forward, backward, stop, left, right, stop_turning, up, down, stop_tilt, panRight, panLeft, stop_pan };
     unsigned char buffer[1];
     while (true)
     {
@@ -101,5 +100,3 @@ void metwo::robot::webcam_thread(shared_ptr<tcp_client> tcp)
         tcp->write(&buf[0], s);
     }
 }
-
-

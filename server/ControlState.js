@@ -72,13 +72,13 @@ module.exports = class ControlState extends State {
             }
             return false
         }
-
         return false
     }
 
 
 
     handle(buffer, socket) {
+      console.log(buffer[0])
         if (this.validate(buffer[0])) {
             Signals.map(buffer)
             super.redirect(buffer, socket)
