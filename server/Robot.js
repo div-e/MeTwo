@@ -3,6 +3,7 @@
 const CameraState = require('./CameraState');
 const ControlState = require('./ControlState');
 const Signals = require('./Signals');
+const Script = require('./pages/script'); 
 
 module.exports = class Robot {
     constructor(socket, broadcast, cleanUp) {
@@ -15,7 +16,7 @@ module.exports = class Robot {
         this.copied = 0;
         this.restBuffer = null;
 
-        this.camState = new CameraState();
+        //this.camState = new CameraState();
         this.conState = new ControlState();
         this.socket = socket;
         this.broadcast = broadcast;
@@ -27,16 +28,16 @@ module.exports = class Robot {
     }
 
     takeThis(buffer) {
-        if (buffer[0] < Signals.UP) {
+        //if (buffer[0] < Signals.map[Script.browser) {
             this.conState.handle(buffer, this.socket);
-        }
-        else {
-            this.camState.handle(buffer, this.socket);
-        }
+        //}
+        //else {
+        //    this.camState.handle(buffer, this.socket);
+        //}
     }
 
     disconnectHandler() {
-        this.camState.close();
+        //this.camState.close();
         this.cleanUp();
         console.log('Robot disconnected');
     }
