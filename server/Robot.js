@@ -1,9 +1,8 @@
 "use strict" 
 
-const CameraState = require('./CameraState');
+//const CameraState = require('./CameraState');
 const ControlState = require('./ControlState');
-const Signals = require('./Signals');
-const Script = require('./pages/script'); 
+//const Signals = require('./Signals');
 
 module.exports = class Robot {
     constructor(socket, broadcast, cleanUp) {

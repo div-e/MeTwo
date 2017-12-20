@@ -227,11 +227,12 @@ module.exports = class ControlState extends State {
     handle(buffer, socket) {
       var browserSignal = buffer[0]; 
       if(Signals.map.has(browserSignal)) {
-        var signal = Signals.map.(browserSignal); 
+        var signal = Signals.map.get(browserSignal); 
         if(this.validate(signal)) {
           super.redirect(signal, socket); 
         } 
-      } 
+      }
+    }
 /*
       if (Signals.map.has(browserSignal) && 
         this.validate(Signals.map(browserSignal))) {
