@@ -7,7 +7,7 @@ const Browser = require('./Browser');
 
 var express = require('express');
 
-// we need to guantee the web page is running
+// we need to guarantee the web page is running
 let app = express()
 
 app.use(express.static('./pages'));
@@ -25,33 +25,40 @@ console.log("Running at Port 3000");
 
 
 
-
+// Initialize robot and browser variables
 let robot = null;
 let browser = null;
 
+// Create server and robot object. The robot has a socket in which it recieves 
 const tcpServer = net.createServer(socket => {
-    robot = new Robot(socket, buffer => {
-        if (browser != null) {
-            browser.takeThis(buffer);
-        }
-    }, () => {
+    robot = new Robot(socket, 
+        // broadcast function (Robot sending to browser)
+        buffer => {
+            if (browser != null) {
+                browser.takeThis(buffer);
+            }
+        }, () => {
         robot = null;
     });
 });
 tcpServer.listen(6000);
 
 
-
+// WebSocket server listens on port 6001 (where the client-side browser sends the browserSignals)
 const wsServer = new WebSocket.Server({
     perMessageDeflate: false,
     port: 6001
 })
+// When browser is connected, create Browser object. 
 wsServer.on('connection', (ws) => {
-    browser = new Browser(ws, buffer => {
-        if (robot != null) {
-            robot.takeThis(buffer);
+    browser = new Browser(ws, 
+        // broadcast function (Browser sending to robot)
+        buffer => {
+            if (robot != null) {
+                robot.takeThis(buffer);
+            }
         }
-    }, () => {
+    , () => {
         browser = null;
     });
 });

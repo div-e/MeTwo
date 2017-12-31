@@ -1,10 +1,10 @@
 "use strict" 
 
-//const CameraState = require('./CameraState');
+// Controletate for handling and mapping buffer to the robot
 const ControlState = require('./ControlState');
-//const Signals = require('./Signals');
 
 module.exports = class Robot {
+    /* Constructor connects handlers to appropriate functions */ 
     constructor(socket, broadcast, cleanUp) {
         this.disconnectHandler = this.disconnectHandler.bind(this);
         this.messageHandler = this.messageHandler.bind(this);
@@ -15,7 +15,6 @@ module.exports = class Robot {
         this.copied = 0;
         this.restBuffer = null;
 
-        //this.camState = new CameraState();
         this.conState = new ControlState();
         this.socket = socket;
         this.broadcast = broadcast;
@@ -26,21 +25,17 @@ module.exports = class Robot {
         console.log('Robot connected');
     }
 
+    /* takeThis() handles buffers sent from browser to robot */
     takeThis(buffer) {
-        //if (buffer[0] < Signals.map[Script.browser) {
-            this.conState.handle(buffer, this.socket);
-        //}
-        //else {
-        //    this.camState.handle(buffer, this.socket);
-        //}
+        this.conState.handle(buffer, this.socket);
     }
 
     disconnectHandler() {
-        //this.camState.close();
         this.cleanUp();
         console.log('Robot disconnected');
     }
 
+    /* WIP For Video streaming */
     messageHandler(buffer) {
         if (this.restBuffer != null) {
             concatBuffer(this.restBuffer);
@@ -53,6 +48,7 @@ module.exports = class Robot {
         }
     }
 
+    /* WIP For Video streaming */
     concatBuffer(buffer) {
         if (this.frameLength == this.copied) {
             this.frameLength = buffer.readUInt16BE(0);

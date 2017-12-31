@@ -1,5 +1,6 @@
 "use strict" 
 
+// State class is extended by ControlState
 module.exports = class State {
     redirect(buffer, socket) {
         try {

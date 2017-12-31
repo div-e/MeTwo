@@ -1,18 +1,19 @@
 ﻿'use strict';
 
-//import * as Signals from "../Signals";
-
-
+// Define root as module if using this file through nodejs for server, and window if used by client.
 var root = null; 
 if(typeof module !== 'undefined' && typeof module.exports !== 'undefined') 
   root = module;
 else 
   root = window; 
 
-
-//root = exports ? window
-// Function Enum
-// These must be mapped the same as robot.cpp controls[] fuction
+/* 
+ * Robot Functions Enum
+ * These must be mapped the same as robot.cpp controls[] fuction.
+ * The numbers represent the place of the function in the cpp function array.
+ * These are what are uncovered by the robot after being sent the browser signal. 
+ * The two are mapped together in the variable map. 
+ */
 root.robotFunctions = {
         FORWARD: 0,
         BACKWARD: 1,
@@ -28,7 +29,10 @@ root.robotFunctions = {
         STOP_PAN: 11, 
 }
 
-// Browser Signal Enum
+/* 
+ * Browser Signal Enum
+ * These are all the possible happenings from the browser. 
+ */ 
 root.browserSignals = {
         W_KEY_UP: 0, 
         W_KEY_DOWN: 1,
@@ -48,6 +52,11 @@ root.browserSignals = {
         L_KEY_DOWN: 15
 };
 
+/*
+ * Map is a simple array mapping between the browser signal and the robotFunction.
+ * The browser signals are the indices and the robot functions are the values.  
+ * The size of map depends on how many browser signals we have. 
+ */ 
 root.map = new Uint8Array(17);
 
 root.map[root.browserSignals.W_KEY_DOWN] = root.robotFunctions.FORWARD;
@@ -68,15 +77,18 @@ root.map[root.browserSignals.J_KEY_UP] = root.robotFunctions.STOP_PAN;
 root.map[root.browserSignals.L_KEY_DOWN] = root.robotFunctions.PAN_RIGHT;
 root.map[root.browserSignals.L_KEY_UP] = root.robotFunctions.STOP_PAN;
 
+
+/*
+ * Code to be run only if this javascript file is run on a browser (i.e. client-side)
+*/ 
 if (typeof(window) !== 'undefined') {
-
-  
   browserFunction();
-  
 
-
-  //window.addEventListener('load', browserFunction, false);
-
+  /*
+   * browserFunction()
+   * This function maps the keyup and keydown signals and connects the window keyup and keydown
+   * events to their appropriate handlers. The keys get sent through a websocket initialized in connect(). 
+   */
   function browserFunction() {
       let ws = null
       const keyDownSignals = new Map()
@@ -102,9 +114,14 @@ if (typeof(window) !== 'undefined') {
 
       connect()
 
+      /*
+       * connect() 
+       * Connects websocket to the a specific port on the server
+       */
       function connect() {
           ws = new WebSocket("ws://" + window.location.hostname + ":6001/control")
           ws.binaryType = "arraybuffer"
+          // WIP for live feed video processing
           ws.onmessage = imgHandler
 
           window.onkeydown = keyDownHandler
@@ -127,6 +144,7 @@ if (typeof(window) !== 'undefined') {
           ws.send(keyUpSignals.get(e.key))
       }
 
+      // WIP for live feed video processing
       function imgHandler(e) {
           console.log(e.data)
           let b = new Blob([e.data], {type: 'image/jpeg'})

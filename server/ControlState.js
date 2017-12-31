@@ -1,9 +1,14 @@
 "use strict"
-const Signals = require('./pages/script')
+
+// Signals for mapping and understanding the signals we get. 
+const Signals = require('./pages/script');
+
+// Extending State for redirect function to robot.
 const State = require('./State')
 
 
 module.exports = class ControlState extends State {
+    /* Constructor initializes all the variables */
     constructor() {
         super()
         this.forward = false
@@ -11,233 +16,168 @@ module.exports = class ControlState extends State {
         this.left = false
         this.right = false
         
-        this.up = false
-        this.down = false
+        this.tiltUp = false
+        this.tiltDown = false
 	      this.panRight = false
 	      this.panLeft = false
     }
 
-    validate(funct) {
+    /* 
+     * validate()
+     * checks if any functions need to be sent to robot. Returns true if yes, false if not. 
+     * Also, updates the states of the robot set in constructor. 
+     */
+    validate(signal) {
 
-      switch(funct) {
-        case Signals.robotFunctions.FORWARD: 
+      switch(signal) {
+        case Signals.browserSignals.W_KEY_DOWN: 
           if (this.forward || this.backward) {
             return false
           } else {
+            // Go forward
             this.forward = true
             return true
           }
-        case Signals.robotFunctions.BACKWARD: 
+        case Signals.browserSignals.S_KEY_DOWN: 
           if (this.backward || this.forward) {
             return false
           } else {
+            // Go backward
             this.backward = true
             return true
           }
-        case Signals.robotFunctions.STOP: 
-          if(this.forward || this.backward) { 
+        case Signals.browserSignals.W_KEY_UP: 
+          if(this.forward) { 
+            // Stop going forward
             this.forward = false; 
+            return true; 
+          } else { 
+            return false; 
+          }
+        case Signals.browserSignals.S_KEY_UP: 
+          if(this.backward) { 
+            // Stop going backward
             this.backward = false; 
             return true; 
           } else { 
             return false; 
           }
-        case Signals.robotFunctions.LEFT: 
+        case Signals.browserSignals.A_KEY_DOWN: 
           if(this.left || this.right) {
             return false; 
           } else {
+            // Go left
             this.left = true;
             return true; 
           } 
-        case Signals.robotFunctions.RIGHT: 
+        case Signals.browserSignals.D_KEY_DOWN: 
           if (this.right || this.left) {
             return false
           } else {
+            // Go right
             this.right = true
             return true
           }
-        case Signals.robotFunctions.STOP_TURNING:
-          if (this.left || this.right) {
+        case Signals.browserSignals.A_KEY_UP:
+          if (this.left) {
+            // Stop turning left
             this.left = false
-            this.right = false;
             return true
           } else { 
             return false 
           }
-        case Signals.robotFunctions.TILT_UP: 
-          if (this.down || this.up) {
+        case Signals.browserSignals.D_KEY_UP:
+          if (this.right) {
+            // Stop turning right
+            this.right = false
+            return true
+          } else { 
+            return false 
+          }
+        case Signals.browserSignals.I_KEY_DOWN: 
+          if (this.tiltDown || this.tiltUp) {
             return false
           } else { 
-            this.up = true
+            // Tilt camera up
+            this.tiltUp = true
             return true
           } 
-        case Signals.robotFunctions.TILT_DOWN: 
-          if (this.down || this.up) {
+        case Signals.browserSignals.K_KEY_DOWN: 
+          if (this.tiltDown || this.tiltUp) {
             return false
           } else { 
-            this.down = true
+            // Tilt camera down
+            this.tiltDown = true
             return true
           } 
-        case Signals.robotFunctions.STOP_TILT: 
-          if (this.up || this.down) {
-            this.up = false
-            this.down = false
+        case Signals.browserSignals.I_KEY_UP: 
+          if (this.tiltUp) {
+            // Stop tilting up
+            this.tiltUp = false
             return true
           } else {
             return false
           }
-        case Signals.robotFunctions.PAN_LEFT: 
+        case Signals.browserSignals.K_KEY_UP: 
+          if (this.tiltDown) {
+            // Stop tilting down
+            this.tiltDown = false
+            return true
+          } else {
+            return false
+          }
+        case Signals.browserSignals.J_KEY_DOWN: 
           if(this.panRight || this.panLeft) {
             return false
           } else {
+            // Pan left
             this.panLeft = true
             return true
           }
-        case Signals.robotFunctions.PAN_RIGHT: 
+        case Signals.browserSignals.L_KEY_DOWN: 
           if(this.panRight || this.panLeft) {
             return false; 
           } else {
-            this.panLeft = true; 
+            // Pan right
+            this.panRight = true; 
             return true; 
           } 
-        case Signals.robotFunctions.STOP_PAN: 
-          if (this.panRight || this.panLeft) {
-            this.panRight = false
+        case Signals.browserSignals.J_KEY_UP: 
+          if (this.panLeft) {
+            // Stop pan left
             this.panLeft = false
+            return true
+          } else {
+            return false
+          }
+        case Signals.browserSignals.L_KEY_UP: 
+          if (this.panRight) {
+            // Stop pan right
+            this.panRight = false
             return true
           } else {
             return false
           }
         default: return false; 
 
-
-
       }
-      /*
-        if (flag === Signals.FORWARD) {
-            if (this.forward || this.backward) {
-                return false
-            }
-            this.forward = true
-            return true
-        }
-        else if (flag === Signals.BACKWARD) {
-            if (this.backward || this.forward) {
-                return false
-            }
-            this.backward = true
-            return true
-        }
-        else if (flag === Signals.LEFT) {
-            if (this.left || this.right) {
-                return false
-            }
-            this.left = true
-            return true
-        }
-        else if (flag == Signals.RIGHT) {
-            if (this.right || this.left) {
-                return false
-            }
-            this.right = true
-            return true
-        }
-        else if (flag == Signals.STOP_F) {
-            if (this.forward) {
-                this.forward = false
-                return true
-            }
-            return false
-        }
-        else if (flag == Signals.STOP_B) {
-            if (this.backward) {
-                this.backward = false
-                return true
-            }
-            return false
-        }
-        else if (flag == Signals.STOP_L) {
-            if (this.left) {
-                this.left = false
-                return true
-            }
-            return false
-        }
-        else if (flag == Signals.STOP_R) {
-            if (this.right) {
-                this.right = false
-                return true
-            }
-            return false
-        }
-
-
-        // Camera tilting controls
-        else if (flag === Signals.UP) {
-            if (this.down || this.up) {
-                return false
-            }
-            this.up = true
-            return true
-        } else if (flag === Signals.DOWN) {
-            if (this.up || this.down) {
-                return false
-            }
-            this.down = true
-            return true
-        }
-        
-        else if (flag === Signals.STOP_U) {
-            if (this.up) {
-                this.up = false
-                return true
-            }
-            return false
-        }
-        else if (flag === Signals.STOP_D) {
-            if (this.down) {
-                this.down = false
-                return true
-            }
-            return false
-        }
-
-        else if(flag === Signals.PAN_RIGHT) {
-          if(this.panRight || this.panLeft) {
-            return false
-          } else {
-            this.panRight = true
-            return true
-          }
-        }
-        else if(flag === Signals.PAN_LEFT) {
-          if(this.panRight || this.panLeft) {
-            return false
-          } else {
-            this.panLeft = true
-            return true
-          }
-        }
-
-        return false*/
     }
 
 
-
+    /* 
+     * handle() 
+     * called when a buffer to the robot needs to be handled.
+     */
     handle(buffer, socket) {
       var browserSignal = buffer[0]; 
+      // Check if valid browser signal
       if(Signals.map.has(browserSignal)) {
-        var signal = Signals.map.get(browserSignal); 
-        if(this.validate(signal)) {
-          super.redirect(signal, socket); 
+        // Check if any function changes need to be sent to robot
+        if(this.validate(browserSignal)) {
+          var robotFunction = Signals.map.get(browserSignal); 
+          // Send mapped robotFunction to robot
+          super.redirect(robotFunction, socket); 
         } 
       }
     }
-/*
-      if (Signals.map.has(browserSignal) && 
-        this.validate(Signals.map(browserSignal))) {
-          //Signals.map(buffer)
-          super.redirect(Signals.map(browserSignal), socket)
-      }
-    }*/
 }
