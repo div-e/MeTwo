@@ -1,5 +1,5 @@
 "use strict"
-const Signals = require('./Signals')
+const Signals = require('./pages/script')
 const State = require('./State')
 
 
