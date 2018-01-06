@@ -10,9 +10,9 @@ namespace metwo
     void left();
     void right();
     void stop();
-    void stop_turning();
-    void stop_tilt(); 
-    void stop_pan(); 
+    void stopTurning();
+    void stopTilt(); 
+    void stopPan(); 
     void terminate(); 
 
 }
