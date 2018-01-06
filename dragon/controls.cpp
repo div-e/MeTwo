@@ -140,7 +140,7 @@ void metwo::tiltDown() {
 }
 
 // dummy method doesn't do anything but gives the server something to call
-void metwo::stopTilt() {
+void metwo::stop_Tilt() {
   printf("Stop tilt was called");  
 }
 
@@ -164,7 +164,7 @@ void metwo::panLeft() {
 }
 
 // dummy method doesn't do anything but gives the server something to call
-void metwo::stopPan() {
+void metwo::stop_Pan() {
   printf("Stop pan was called"); 
 } 
 
