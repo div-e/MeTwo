@@ -140,7 +140,7 @@ void metwo::tiltDown() {
 }
 
 // dummy method doesn't do anything but gives the server something to call
-void metwo::stop_Tilt() {
+void metwo::stopTilt() {
   printf("Stop tilt was called");  
 }
 
@@ -164,7 +164,7 @@ void metwo::panLeft() {
 }
 
 // dummy method doesn't do anything but gives the server something to call
-void metwo::stop_Pan() {
+void metwo::stopPan() {
   printf("Stop pan was called"); 
 } 
 
@@ -301,7 +301,7 @@ void metwo::stop()
 }
 
 // Puts robot back into original FORWARD, BACKWARD, or STOP state
-void metwo::stop_turning()
+void metwo::stopTurning()
 {
     printf("%s\n", "stop_turning");
 
