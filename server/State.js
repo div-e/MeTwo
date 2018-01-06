@@ -7,7 +7,8 @@ module.exports = class State {
             socket.write(buffer)
         }
         catch (e) {
-            console.log('Falied to communicate with the robot')
+            console.log('Failed to communicate with robot')
+            console.log(e.stack);
         }
     }
 }

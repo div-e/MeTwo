@@ -2,10 +2,14 @@
 
 // Define root as module if using this file through nodejs for server, and window if used by client.
 var root = null; 
-if(typeof module !== 'undefined' && typeof module.exports !== 'undefined') 
-  root = module;
-else 
+if(typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  root = module.exports;
+  console.log("module"); 
+}
+else {
   root = window; 
+  console.log("window");
+}
 
 /* 
  * Robot Functions Enum
@@ -57,8 +61,27 @@ root.browserSignals = {
  * The browser signals are the indices and the robot functions are the values.  
  * The size of map depends on how many browser signals we have. 
  */ 
-root.map = new Uint8Array(17);
+//root.map = new Uint8Array(17);
 
+const iterable = [[root.browserSignals.W_KEY_DOWN, root.robotFunctions.FORWARD],
+                  [root.browserSignals.W_KEY_UP, root.robotFunctions.STOP],
+                  [root.browserSignals.S_KEY_DOWN, root.robotFunctions.BACKWARD],
+                  [root.browserSignals.S_KEY_UP, root.robotFunctions.STOP],
+                  [root.browserSignals.A_KEY_DOWN, root.robotFunctions.LEFT],
+                  [root.browserSignals.A_KEY_UP, root.robotFunctions.STOP_TURNING],
+                  [root.browserSignals.D_KEY_DOWN, root.robotFunctions.RIGHT],
+                  [root.browserSignals.D_KEY_UP, root.robotFunctions.STOP_TURNING],
+
+                  [root.browserSignals.I_KEY_DOWN, root.robotFunctions.TILT_UP],
+                  [root.browserSignals.I_KEY_UP, root.robotFunctions.STOP_TILT],
+                  [root.browserSignals.K_KEY_DOWN, root.robotFunctions.TILT_DOWN],
+                  [root.browserSignals.K_KEY_UP, root.robotFunctions.STOP_TILT],
+                  [root.browserSignals.L_KEY_DOWN, root.robotFunctions.PAN_RIGHT],
+                  [root.browserSignals.L_KEY_UP, root.robotFunctions.STOP_PAN],
+                  [root.browserSignals.J_KEY_DOWN, root.robotFunctions.PAN_LEFT],
+                  [root.browserSignals.J_KEY_UP, root.robotFunctions.STOP_PAN]];
+
+/*
 root.map[root.browserSignals.W_KEY_DOWN] = root.robotFunctions.FORWARD;
 root.map[root.browserSignals.W_KEY_UP] = root.robotFunctions.STOP;
 root.map[root.browserSignals.S_KEY_DOWN] = root.robotFunctions.BACKWARD;
@@ -76,6 +99,8 @@ root.map[root.browserSignals.J_KEY_DOWN] = root.robotFunctions.PAN_LEFT;
 root.map[root.browserSignals.J_KEY_UP] = root.robotFunctions.STOP_PAN;
 root.map[root.browserSignals.L_KEY_DOWN] = root.robotFunctions.PAN_RIGHT;
 root.map[root.browserSignals.L_KEY_UP] = root.robotFunctions.STOP_PAN;
+*/
+root.map = new Map(iterable);
 
 
 /*

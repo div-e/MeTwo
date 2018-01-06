@@ -176,7 +176,7 @@ module.exports = class ControlState extends State {
         if(this.validate(browserSignal)) {
           var robotFunction = Signals.map.get(browserSignal); 
           // Send mapped robotFunction to robot
-          super.redirect(robotFunction, socket); 
+          super.redirect(new Buffer([robotFunction]), socket); 
         } 
       }
     }
