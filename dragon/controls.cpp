@@ -139,6 +139,12 @@ void metwo::tiltDown() {
   updateMotors();
 }
 
+// dummy method doesn't do anything but gives the server something to call
+void metwo::stopTilt() {
+  printf("Stop tilt was called");  
+}
+
+
 // pans right (increments the pan servo value)
 void metwo::panRight() {
   printf("Pan Right was called. Servo val: %d\n", servo_pan_pwm_val);
@@ -157,7 +163,10 @@ void metwo::panLeft() {
   updateMotors();
 }
 
-
+// dummy method doesn't do anything but gives the server something to call
+void metwo::stopPan() {
+  printf("Stop pan was called"); 
+} 
 
 
 

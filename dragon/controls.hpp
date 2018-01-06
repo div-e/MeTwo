@@ -11,6 +11,8 @@ namespace metwo
     void right();
     void stop();
     void stop_turning();
+    void stop_tilt(); 
+    void stop_pan(); 
     void terminate(); 
 
 }
