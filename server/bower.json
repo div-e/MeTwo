@@ -1,0 +1,9 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "dependencies": {
+    "angular": "~1.6",
+    "angular-route": "~1.6",
+    "angular-resource": "~1.6"
+  }
+}
