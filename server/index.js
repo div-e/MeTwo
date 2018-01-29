@@ -1,4 +1,4 @@
-"use strict"
+//"use strict"
 
 const WebSocket = require('ws')
 const net = require('net')
@@ -8,7 +8,7 @@ const Browser = require('./Browser');
 var express = require('express');
 
 // we need to guarantee the web page is running
-let app = express()
+let app = express();
 
 app.use(express.static('./pages'));
 
@@ -29,9 +29,9 @@ console.log("Running at Port 3000");
 let robot = null;
 let browser = null;
 
-// Create server and robot object. The robot has a socket in which it recieves 
+// Create server and robot object. The robot has a socket in which it recieves
 const tcpServer = net.createServer(socket => {
-    robot = new Robot(socket, 
+    robot = new Robot(socket,
         // broadcast function (Robot sending to browser)
         buffer => {
             if (browser != null) {
@@ -49,9 +49,9 @@ const wsServer = new WebSocket.Server({
     perMessageDeflate: false,
     port: 6001
 })
-// When browser is connected, create Browser object. 
+// When browser is connected, create Browser object.
 wsServer.on('connection', (ws) => {
-    browser = new Browser(ws, 
+    browser = new Browser(ws,
         // broadcast function (Browser sending to robot)
         buffer => {
             if (robot != null) {
