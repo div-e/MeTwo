@@ -25,7 +25,6 @@ var VirtualJoystick	= function(opts)
 	this._pressed	= false;
 	this._touchIdx	= null;
 
-	console.log("hello world");
 	if(this._stationaryBase === true){
 		this._baseEl.style.display	= "";
 		this._baseEl.style.left		= (this._baseX - this._baseEl.width /2)+"px";

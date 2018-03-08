@@ -33,10 +33,43 @@
 			-webkit-user-select	: none;
 			-moz-user-select	: none;
 		}
+
+		#container {
+			width: 100%;
+			height: 100%;
+
+
+		}
+
+		#left {
+			width		: 50%;
+			height  : 100%;
+			overflow: hidden;
+			padding: 0;
+			margin: 0;
+			float: left;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			background: blue;
+		}
+
+		#right {
+			width: 50%;
+			height: 100%;
+			overflow: hidden;
+			padding: 0;
+			margin: 0;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			background: green;
+		}
 		</style>
 	</head>
 	<body>
-		<div id="container"></div>
+		<div id="container">
+			<div id="left"></div>
+			<div id="right"></div>
+		</div>
 		<div id="info">
 			<a href="http://learningthreejs.com/blog/2011/12/26/let-s-make-a-3d-game-virtual-joystick/" target="_blank">VirtualJoystick.js</a>
 			A library javascript to provide a virtual joystick on touchscreen.
@@ -50,33 +83,65 @@
 			-
 			works with mouse too as debug
 			<br/>
-			<span id="result"></span>
+			<span id="result1"></span>
+			<span id="result2"></span>
 		</div>
     <script src="script.js"></script>
 		<script src="joystick.js"></script>
 		<script>
-			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+			if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+				var joystick	= new VirtualJoystick({
+				container	: document.body,
+				strokeStyle	: 'cyan',
+				limitStickTravel: true,
+				stickRadius	: 120
+				});
+				joystick.addEventListener('touchStartValidation', function(event){
+					var touch	= event.changedTouches[0];
+					if( touch.pageX < window.innerWidth/2 )	return false;
+					return true
+				});
 
-			var joystick	= new VirtualJoystick({
-				container	: document.getElementById('container'),
-				mouseSupport	: true,
-			});
-			joystick.addEventListener('touchStart', function(){
-				console.log('down')
-			})
-			joystick.addEventListener('touchEnd', function(){
-				console.log('up')
-			})
-			setInterval(function(){
-				var outputEl	= document.getElementById('result');
-				outputEl.innerHTML	= '<b>Result:</b> '
-					+ ' dx:'+joystick.deltaX()
-					+ ' dy:'+joystick.deltaY()
-					+ (joystick.right()	? ' right'	: '')
-					+ (joystick.up()	? ' up'		: '')
-					+ (joystick.left()	? ' left'	: '')
-					+ (joystick.down()	? ' down' 	: '')
-			}, 1/30 * 1000);
+				// one on the right of the screen
+				var joystick	= new VirtualJoystick({
+					container	: document.body,
+					strokeStyle	: 'orange',
+					limitStickTravel: true,
+					stickRadius	: 120
+				});
+
+				joystick.addEventListener('touchStartValidation', function(event){
+					var touch	= event.changedTouches[0];
+					if( touch.pageX >= window.innerWidth/2 )	return false;
+					return true
+				});
+			} else {
+				console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+
+				var joystick	= new VirtualJoystick({
+					container	: document.getElementById('container'),
+					mouseSupport	: true,
+				});
+
+				joystick.addEventListener('touchStart', function(){
+					console.log('down')
+				})
+
+				joystick.addEventListener('touchEnd', function(){
+					console.log('up')
+				})
+
+				setInterval(function(){
+					var outputEl	= document.getElementById('result');
+					outputEl.innerHTML	= '<b>Result:</b> '
+						+ ' dx:'+joystick.deltaX()
+						+ ' dy:'+joystick.deltaY()
+						+ (joystick.right()	? ' right'	: '')
+						+ (joystick.up()	? ' up'		: '')
+						+ (joystick.left()	? ' left'	: '')
+						+ (joystick.down()	? ' down' 	: '')
+					}, 1/30 * 1000);
+			}
 		</script>
 	</body>
 </html>
