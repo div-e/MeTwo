@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "https://github.com/MeTwo-UCSD/MeTwo",
   "dependencies": {
-    "express": "^4.16.2",
+    "express": "^4.16.3",
     "ws": "^2.3.1"
   }
 }
