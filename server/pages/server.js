@@ -3,6 +3,19 @@
 const WebSocket = require('ws');
 const myPort = 8080;
 const wsServer = new WebSocket.Server({port: myPort});
+var express = require('express');
+var path = require('path');
+var app = express();
+
+app.use(express.static(__dirname));
+
+app.get('/', function(request, response) {
+  response.sendFile('index.html', {root: path.join(__dirname, '.')});
+});
+
+app.listen(3000, function() {
+  console.log("listening on port 3000");
+});
 
 wsServer.on('connection', connectionHandler);
 
