@@ -1,6 +1,6 @@
 
 
-const myPort = 8080;
+const myPort = 8081;
 var counter = 0;
 
 // If JS is executed in a browser window: 
@@ -8,7 +8,7 @@ if (typeof(window) !== 'undefined') {
 
   var connection = new WebSocket('ws://localhost:' + myPort);
   connection.onopen = function() {
-    console.log("client says: connection established!");
+    console.log("robot says: connection established!");
   }
 
   connection.onmessage = function(message) {
@@ -22,11 +22,8 @@ if (typeof(window) !== 'undefined') {
       if (e.repeat) {
           return;
       }
-      e = e || window.event; 
-
-      var charCode = e.keyCode || e.which;
-      var str = String.fromCharCode(charCode); 
-      connection.send("Client: " + str);
+      connection.send("this is an awesome message. - from Robot " + counter);
+      counter++;
   }
 
 
