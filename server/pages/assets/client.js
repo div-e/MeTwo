@@ -44,6 +44,7 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
   var joystick	= new VirtualJoystick({
     container	: document.getElementById('container'),
     mouseSupport	: true,
+    limitStickTravel  : true
   });
 
   joystick.addEventListener('touchStart', function(){
@@ -97,35 +98,36 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     var leftMotor = 0;
     var rightMotor = 0;
 
-    if (w == true) {
-      leftMotor = leftMotor + 1;
-      rightMotor += 1;
+    if (w) {
+      leftMotor += 2;
+      rightMotor += 2;
     }
 
     if (a) {
-      leftMotor -= .5;
-      rightMotor += .5;
+      leftMotor -= 1;
+      rightMotor += 1;
     }
 
     if (s) {
-      leftMotor -= 1;
-      rightMotor -= 1;
+      leftMotor -= 2;
+      rightMotor -= 2;
     }
 
     if (d) {
-      leftMotor += .5;
-      rightMotor -= .5;
+      leftMotor += 1;
+      rightMotor -= 1;
     }
+    leftMotor += 4;
+    rightMotor += 4;
 
+    var joystickX = Math.floor(joystick.deltaX() / 20) + 5;
+    var joystickY = Math.floor(joystick.deltaY() / 20) + 5;
     /* convert to json string */
-    var jsonJoystick = {dx:joystick.deltaX(), dy:joystick.deltaY()};
-    var jsonJoystickString = JSON.stringify(jsonJoystick);
-
-    var jsonWASD = {leftMotor: leftMotor, rightMotor: rightMotor};
-    var jsonWASDString = JSON.stringify(jsonWASD);
+    var json = {leftMotor:leftMotor, rightMotor:rightMotor,
+                dx:joystickX, dy:joystickY};
+    var jsonString = JSON.stringify(json);
 
     /* send json strings */
-    connection.send(jsonJoystickString);
-    connection.send(jsonWASDString);
+    connection.send(jsonString);
   }, 1/30 * 1000);
 }
