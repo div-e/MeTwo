@@ -6,7 +6,7 @@ var counter = 0;
 // If JS is executed in a browser window: 
 if (typeof(window) !== 'undefined') {
 
-  var connection = new WebSocket('ws://localhost:' + myPort);
+  var connection = new WebSocket('ws://192.168.0.101:'+myPort);
   connection.onopen = function() {
     console.log("client says: connection established!");
   }
