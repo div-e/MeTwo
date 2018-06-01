@@ -1,7 +1,7 @@
 const myPort = 8080;
 var counter = 0;
 
-var connection = new WebSocket('ws://192.168.0.201/:'+myPort);//'ws://localhost:' + myPort);
+var connection = new WebSocket('ws://192.168.0.201:'+myPort);//'ws://localhost:' + myPort);
 
 connection.onopen = function() {
   console.log("client says: connection established!");
