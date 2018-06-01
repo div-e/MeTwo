@@ -1,7 +1,7 @@
 const myPort = 8080;
 var counter = 0;
 
-var connection = new WebSocket('ws://192.168.9.201/:'+myPort);//'ws://localhost:' + myPort);
+var connection = new WebSocket('ws://192.168.0.201/:'+myPort);//'ws://localhost:' + myPort);
 
 connection.onopen = function() {
   console.log("client says: connection established!");
@@ -148,7 +148,6 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     leftMotor += 4;
     rightMotor += 4;
 
-<<<<<<< HEAD
     joystickX_prev = joystickX; 
     joystickY_prev = joystickY; 
 
@@ -166,14 +165,6 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
       connection.send(jsonString);
     }
     
-=======
-    var joystickX = Math.round(joystick.deltaX() / 20) + 5;
-    var joystickY = Math.round(joystick.deltaY() / 20) + 5;
-    /* convert to json string */
-    var json = {leftMotor:leftMotor, rightMotor:rightMotor,
-                dx:joystickX, dy:joystickY};
-    var jsonString = JSON.stringify(json);
->>>>>>> 9dfb3a2dde2d84816e855d2b0d51a3447ba107bf
 
     
   }, 1/30 * 1000);
