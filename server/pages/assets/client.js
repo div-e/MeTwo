@@ -1,29 +1,55 @@
 const myPort = 8080;
 var counter = 0;
 
-var connection = new WebSocket('ws://192.168.0.101:'+myPort);//'ws://localhost:' + myPort);
+var connection = new WebSocket('ws://localhost:' + myPort);//'ws://192.168.0.101:'+myPort);
+var connectionOpen = false; 
 
 connection.onopen = function() {
   console.log("client says: connection established!");
+  connectionOpen = true; 
 }
 
 connection.onmessage = function(message) {
   console.log("message from server: " + message.data);
 };
 
-
-// Checks whether or not there was a change in WASD or joystick
-function hasChange() {
-  if(w != w_prev) {console.log("has change w"); return false;}
-  if(a != a_prev) {return false;}
-  if(s != s_prev) {return false;}
-  if(d != d_prev) {return false;}
-
-  if(joystickX_prev != joystickX) {return false;}
-  if(joystickY_prev != joystickY) {return false;}
-
-  return true;
+connection.onclose = function() {
+  connectionOpen = false;
 }
+
+
+/* send key signals */
+var w = false;
+var a = false;
+var s = false;
+var d = false;
+
+/* motor speed global vars */
+var leftMotor = 0;
+var rightMotor = 0;
+
+var leftMotor_prev = 0;
+var rightMotor_prev = 0;
+
+/* joystick global vars */
+var joystickX = 5;
+var joystickY = 5;
+
+var joystickX_prev = 5;
+var joystickY_prev = 5;
+
+
+// Checks whether or not there was a change in drive motor speed or joystick. 
+function hasChange() {
+  
+  if(leftMotor_prev != leftMotor) {console.log("leftmotor"); return true;}
+  if(rightMotor_prev != rightMotor) {console.log("rightmotor"); return true;}
+  if(joystickX_prev != joystickX) {console.log("joyX"); return true;}
+  if(joystickY_prev != joystickY) {console.log("joyY"); return true;}
+
+  return false;
+}
+
 if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
   var joystick	= new VirtualJoystick({
   container	: document.body,
@@ -68,26 +94,7 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     console.log('up');
   });
 
-  /* send key signals */
-  var w = false;
-  var a = false;
-  var s = false;
-  var d = false;
-
-  var w_prev = false;
-  var a_prev = false;
-  var s_prev = false;
-  var d_prev = false;
-
-  /* joystick global vars */
-  var joystickX = 5;
-  var joystickY = 5;
-
-  var joystickX_prev = 5;
-  var joystickY_prev = 5;
-
-
-  /* set wasd booleans to true on key down */
+  // Set wasd booleans to true on key down.
   document.onkeydown = function (event) {
     if (event.keyCode == 87) {
       w = true;
@@ -103,7 +110,7 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     }
   }
 
-  /* set wasd booleans to false on key up */
+  // Set wasd booleans to false on key up. 
   document.onkeyup = function (event) {
     if (event.keyCode == 87) {
       w = false;
@@ -122,9 +129,13 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
  
   setInterval(function(){
 
-    /* calculate speed of left and right motors based on wasd keys */
-    var leftMotor = 0;
-    var rightMotor = 0;
+    // Update the previous motor values. 
+    leftMotor_prev = leftMotor;
+    rightMotor_prev = rightMotor; 
+
+    // Calculate speed of left and right motors based on wasd keys.
+    leftMotor = 0;
+    rightMotor = 0;
 
     if (w) {
       leftMotor += 2;
@@ -145,27 +156,28 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
       leftMotor += 1;
       rightMotor -= 1;
     }
+    // Offset the left and right motors by 4, so the range is 1 to 7, with 4 being the not moving state. 
     leftMotor += 4;
     rightMotor += 4;
 
+    // Update joystick prev values.
     joystickX_prev = joystickX; 
     joystickY_prev = joystickY; 
 
+    // Update joystick values.
     joystickX = Math.floor(joystick.deltaX() / 20) + 5;
     joystickY = Math.floor(joystick.deltaY() / 20) + 5;
 
-    if(hasChange()) {
-      /* convert to json string */
-      var json = {leftMotor:leftMotor, rightMotor:rightMotor,
-        dx:joystickX, dy:joystickY};
+    if(connectionOpen && hasChange()) {
+      
+      // Motor values 1 to 7. 4 is the middle value. 
+      // Joystick values 0 to 9. 5 is the middle value. 
+      var stringToSend = '' + leftMotor + rightMotor + joystickX + joystickY;
+      
 
-      var jsonString = JSON.stringify(json);
-
-      /* send json strings */
-      connection.send(jsonString);
+      // Send string. 
+      connection.send(stringToSend);
     }
-    
-
     
   }, 1/30 * 1000);
 }
