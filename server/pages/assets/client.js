@@ -120,8 +120,8 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     leftMotor += 4;
     rightMotor += 4;
 
-    var joystickX = Math.floor(joystick.deltaX() / 20) + 5;
-    var joystickY = Math.floor(joystick.deltaY() / 20) + 5;
+    var joystickX = Math.round(joystick.deltaX() / 20) + 5;
+    var joystickY = Math.round(joystick.deltaY() / 20) + 5;
     /* convert to json string */
     var json = {leftMotor:leftMotor, rightMotor:rightMotor,
                 dx:joystickX, dy:joystickY};
