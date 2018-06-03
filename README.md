@@ -11,8 +11,8 @@ This repository contains the remote control system of the robot.
 
 ### 2. Start the websocket server
 - make sure you have node.js, express, ws installed
-- cd to server/
-- node index.js
+- cd to server/pages
+- node server
 
 ### 3. Open browser
 - localhost:3000
@@ -31,7 +31,8 @@ This repository contains the remote control system of the robot.
 
 ### 6. Navigate to browser and use WASD, IKJL to control robot motors. 
 
-
+### 7. Data from browser is sent to server, which can be seen from the terminal
+in which you ran node server.
 
 ## TODO
 - Authenticate connections
