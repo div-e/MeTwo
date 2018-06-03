@@ -9,8 +9,28 @@ var ws2;
 const myPort2 = 8081;
 const wsServer2 = new WebSocket.Server({port: myPort2}); 
 
+var express = require('express');
+var path = require('path');
+var app = express();
+
+app.use(express.static(__dirname));
+
+app.get('/1', function(request, response) {
+  response.sendFile('index.html', {root: path.join(__dirname, '.')});
+});
+
+app.get('/2', function(request, response) {
+  response.sendFile('index2.html', {root: path.join(__dirname, '.')});
+});
+
+app.listen(3000, function() {
+  console.log("listening on port 3000");
+});
+
 wsServer.on('connection', connectionHandler);
 wsServer2.on('connection', connectionHandler2); 
+
+
 
 
 // connectionHandler() sets up the event handlers for the websocket.
