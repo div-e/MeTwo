@@ -55,6 +55,15 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     console.log('up');
   });
 
+  var deployStatus = 0;
+  document.getElementById("deployer").onclick = function() {
+    if (deployStatus == 0) {
+      deployStatus = 1;
+    } else {
+      deployStatus = 0;
+    }
+  }
+
   /* send key signals */
   var w = false;
   var a = false;
@@ -124,7 +133,7 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     var joystickY = Math.round(joystick.deltaY() / 20) + 5;
     /* convert to json string */
     var json = {leftMotor:leftMotor, rightMotor:rightMotor,
-                dx:joystickX, dy:joystickY};
+                dx:joystickX, dy:joystickY, deployed:deployStatus};
     var jsonString = JSON.stringify(json);
 
     /* send json strings */
