@@ -1,5 +1,10 @@
 "use strict"
 
+var SerialPort = require('serialport');
+var port = new SerialPort('/dev/ttyACM0', {
+  baudRate: 9600
+});
+
 const WebSocket = require('ws');
 const myPort = 8085;
 const wsServer = new WebSocket.Server({port: myPort});
@@ -29,6 +34,13 @@ function connectionHandler(websocket) {
 // messageHandler() prints out the given message to console.log.
 function messageHandler(message) {
   console.log("message from client: " + message);
+  port.write(message, function(err) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log('message written to arduino');
+    }
+  })
 }
 
 // printClosingStatement() prints the closing statement. Call when closing ws.
