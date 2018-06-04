@@ -1,7 +1,7 @@
-const myPort = 8080;
+const myPort = 8085;
 var counter = 0;
 
-var connection = new WebSocket('ws://localhost:' + myPort);//'ws://192.168.0.101:'+myPort);
+var connection = new WebSocket('ws://192.168.0.201:' + myPort);//'ws://192.168.0.201:'+myPort);
 var connectionOpen = false; 
 
 connection.onopen = function() {

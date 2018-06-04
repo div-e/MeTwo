@@ -1,7 +1,7 @@
 "use strict"
 
 const WebSocket = require('ws');
-const myPort = 8080;
+const myPort = 8085;
 const wsServer = new WebSocket.Server({port: myPort});
 var express = require('express');
 var path = require('path');
