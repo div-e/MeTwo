@@ -2,189 +2,219 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <Wire.h>
 
-#define SERVOMIN  125 // this is the 'minimum' pulse length count (out of 4096)
-#define SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
+#define SERVO_MIN  125 // this is the 'minimum' pulse length count (out of 4096)
+#define SERVO_MAX  575 // this is the 'maximum' pulse length count (out of 4096)
 
-#define leftMotorOutputA 4
-#define leftMotorOutputB 5
-#define rightMotorOutputA 6
-#define rightMotorOutputB 7
+// Motor output pins for movement.
+#define LEFT_MOTOR_A_PIN 3
+#define LEFT_MOTOR_B_PIN 2
+#define RIGHT_MOTOR_A_PIN 4
+#define RIGHT_MOTOR_B_PIN 7
 
-#define leftMotorSpeed 7
-#define rightMotorSpeed 8
+// PWM pins for motor speed.
+#define LEFT_MOTOR_SPEED_PIN 5
+#define RIGHT_MOTOR_SPEED_PIN 6
 
-#define leftEncoderInputA 3
-#define leftEncoderInputB 2 // 2 for interrupt
-#define rightEncoderInputA 3 // TODO CHANGE THIS
-#define rightEncoderInputB 2 // TODO CHANGE THIS
+// Interrupt pins for encoder input to track amount of motor rotation.
+#define LEFT_ENCODER_A_PIN 22
+#define LEFT_ENCODER_B_PIN 18
+#define RIGHT_ENCODER_A_PIN 23
+#define RIGHT_ENCODER_B_PIN 19 
 
-#define leftArmMotorOutputA 8
-#define leftArmMotorOutputB 9
-#define rightArmMotorOutputA 11
-#define rightArmMotorOutputB 12
+// Motor output pins for arm movement.
+#define LEFT_ARM_MOTOR_A_PIN 8
+#define LEFT_ARM_MOTOR_B_PIN 11
+#define RIGHT_ARM_MOTOR_A_PIN 13
+#define RIGHT_ARM_MOTOR_B_PIN 12
 
-#define leftArmSpeed 12
-#define rightArmSpeed 13
-#define armSpeed 100 // 50-255
-#define armThreshold 800 // TODO find magic threshold for deployment
+// PWM pins for arm speed.
+#define LEFT_ARM_SPEED_PIN 9
+#define RIGHT_ARM_SPEED_PIN 10
 
-#define motorSpeedOffset 4 // serial input for motor speed is offset by 4
-// ranges 1-7 with 4 corresponding to no movemento
+// PWM value for arm speed.
+#define ARM_SPEED 100 // 50-255 is range of usable values
 
-#define motorSpeedLevel0 0
-#define motorSpeedLevel1 80
-#define motorSpeedLevel2 160
-#define motorSpeedLevel3 240
+// Amount that arms should rotate for deployment (unknown units).
+#define ARM_DEPLOYMENT_THRESHOLD_VAL 800 // TODO find magic threshold for deployment
 
-//#define xServoPin 9
-//#define yServoPin 11
+// Offset for motorSpeed serial input.
+#define INPUT_OFFSET 4 // serial input for motor speed is offset by 4
+// motorSpeed ranges 1-7 with 4 corresponding to no movement.
 
-#define defaultServoPosition 90
+// PWM Values for motor speed levels.
+#define MOTOR_SPEED_LEVEL_0 0
+#define MOTOR_SPEED_LEVEL_1 80
+#define MOTOR_SPEED_LEVEL_2 160
+#define MOTOR_SPEED_LEVEL_3 240
 
+// Default servo position.
+#define DEFAULT_SERVO_POSITION 90
+
+// Constants for serial input array.
+#define NUM_CONTROLS 5
+#define LEFT_DRIVE_STATE_INDEX 0
+#define RIGHT_DRIVE_STATE_INDEX 1
+#define PAN_SERVO_STATE_INDEX 2
+#define TILT_SERVO_STATE_INDEX 3
+#define DEPLOY_STATE_INDEX 4
+
+// Servo driver.
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
-int dx, dy, xServoPosition, yServoPosition;
+// How many ticks to change per iteration.
+int dx, dy; 
+// Actual servo position to write to servo. 
+int xServoPosition, yServoPosition;
 
-// keeps track of whether or not arm is deployed
-/* bool leftArmDeployed = false; */
-/* bool rightArmDeployed = false; */
+// Keeps track of status of arm deployment.
 bool armDeployed = false;
 
-volatile long leftEncoderValue; // keeps track of left arm encoder value
-volatile long rightEncoderValue; // keeps track of right arm encoder value
+// Keeps track of encoder values of left and right arms.
+volatile long leftArmEncoderValue;
+volatile long rightArmEncoderValue;
 
-Servo xServo, yServo; // Servo vars
+// Array that stores serial input as integers.
 int inputIntArr[5];
 
 void setup() {
 
-    pinMode(rightMotorSpeed, OUTPUT);
-    pinMode(leftMotorSpeed, OUTPUT);
+    // Initialize pin I/O.
+    pinMode(RIGHT_MOTOR_SPEED_PIN, OUTPUT);
+    pinMode(LEFT_MOTOR_SPEED_PIN, OUTPUT);
 
-    pinMode(leftMotorOutputA, OUTPUT);
-    pinMode(leftMotorOutputB, OUTPUT);
-    pinMode(rightMotorOutputA, OUTPUT);
-    pinMode(rightMotorOutputB, OUTPUT);
+    pinMode(LEFT_MOTOR_A_PIN, OUTPUT);
+    pinMode(LEFT_MOTOR_B_PIN, OUTPUT);
+    pinMode(RIGHT_MOTOR_A_PIN, OUTPUT);
+    pinMode(RIGHT_MOTOR_B_PIN, OUTPUT);
 
-    pinMode(leftArmMotorOutputA, OUTPUT);
-    pinMode(leftArmMotorOutputB, OUTPUT);
-    pinMode(rightArmMotorOutputA, OUTPUT);
-    pinMode(rightArmMotorOutputB, OUTPUT);
+    pinMode(LEFT_ARM_MOTOR_A_PIN, OUTPUT);
+    pinMode(LEFT_ARM_MOTOR_B_PIN, OUTPUT);
+    pinMode(RIGHT_ARM_MOTOR_A_PIN, OUTPUT);
+    pinMode(RIGHT_ARM_MOTOR_B_PIN, OUTPUT);
 
-    pinMode(leftEncoderInputA, INPUT);
-    pinMode(rightEncoderInputA, INPUT);
+    pinMode(LEFT_ENCODER_A_PIN, INPUT);
+    pinMode(RIGHT_ENCODER_A_PIN, INPUT);
 
-    pinMode(leftArmSpeed, OUTPUT);
-    pinMode(rightArmSpeed, OUTPUT);
+    pinMode(LEFT_ARM_SPEED_PIN, OUTPUT);
+    pinMode(RIGHT_ARM_SPEED_PIN, OUTPUT);
 
-    attachInterrupt(digitalPinToInterrupt(leftEncoderInputB), leftEncoderEvent, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(rightEncoderInputB), rightEncoderEvent, CHANGE);
-
-    /* xServo.attach(xServoPin); */
-    /* yServo.attach(yServoPin); */
-
-    /* xServo.write(defaultServoPosition); */
-    /* yServo.write(defaultServoPosition); */
-
+    // Attach interrupt to interrupt pins.
+    attachInterrupt(digitalPinToInterrupt(LEFT_ENCODER_B_PIN), leftEncoderEvent, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(RIGHT_ENCODER_B_PIN), rightEncoderEvent, CHANGE);
+    
     pwm.begin();
     pwm.setPWMFreq(60);
     yield();
 
     // Initialize camera to default position
-    setServoPWM(defaultServoPosition, defaultServoPosition);
-
+    xServoPosition = DEFAULT_SERVO_POSITION;
+    yServoPosition = DEFAULT_SERVO_POSITION;
+    setServoPWM(DEFAULT_SERVO_POSITION, DEFAULT_SERVO_POSITION);
+    
     Serial.begin (9600);
     Serial.setTimeout(50);
+    resetInputIntArr(inputIntArr);
     while(!Serial.available());
 }
 
 void loop() {
-    // infinite loop that pauses loop until new serial msg is available
+    // Infinite loop that pauses loop until new serial message is available.
 
-    Serial.print("\nxServoPosition: ");
-    Serial.println(xServoPosition);
-    Serial.print("\nyServoPosition: ");
-    Serial.println(yServoPosition);
+    // Reset inputIntArr. (for debug purposes)
+    //resetInputIntArr(inputIntArr);
 
-    for (int i = 0 ; i < 5 ; i++){
-      inputIntArr[i] = 0;
-    }
     convertSerialStringToIntArray();
 
-    setLeftMotor(inputIntArr[0]);
-    setRightMotor(inputIntArr[1]);
+    for (int i = 0 ; i < 5 ; i++){
+      Serial.print(inputIntArr[i]);
+    }
+    Serial.println("");
 
-    setXServo(inputIntArr[2]);
-    setYServo(inputIntArr[3]);
+    // Set motor and servo values based on serial input.
+    setLeftMotor(inputIntArr[LEFT_DRIVE_STATE_INDEX]);
+    Serial.print("leftDriveStateIndex: ");
+    Serial.println(inputIntArr[LEFT_DRIVE_STATE_INDEX]);
+    setRightMotor(inputIntArr[RIGHT_DRIVE_STATE_INDEX]);
+
+    setXServo(inputIntArr[PAN_SERVO_STATE_INDEX]);
+    setYServo(inputIntArr[TILT_SERVO_STATE_INDEX]);
     setServoPWM(xServoPosition, yServoPosition);
 
-    setArmsState(inputIntArr[4]);
-    stopArmThresholdCheck();
+    setArmsState(inputIntArr[DEPLOY_STATE_INDEX]);
+
+    // Check if arms have reached deployment threshold.
+    stopARM_DEPLOYMENT_THRESHOLD_VALCheck();
+}
+
+void resetInputIntArr(int * inputIntArr){
+    inputIntArr[0] = 4;
+    inputIntArr[1] = 4;
+    inputIntArr[2] = 4;
+    inputIntArr[3] = 4;
+    inputIntArr[4] = 0;
 }
 
 void convertSerialStringToIntArray(){
-    char tempCharArr[5];
-
     if(Serial.available()){
-      Serial.readString().toCharArray(tempCharArr, 6);
-    }
-
-    // Convert ASCII to ints
-    for (int i = 0 ; i < 5 ; i++){
-        inputIntArr[i] = tempCharArr[i] - 48;
-        
-        Serial.print("\ninputArrInt[");
-        Serial.print(i);
-        Serial.print("]: ");
-        Serial.println(inputIntArr[i]);
-
-        Serial.print("\ntempCharArr[");
-        Serial.print(i);
-        Serial.print("]: ");
-        Serial.println(tempCharArr[i]);
-        
+      // Array to store input as characters. Extra spot for null character. 
+      char tempCharArr[NUM_CONTROLS + 1];
+      
+      // Extra  store null termination character.
+      Serial.readString().toCharArray(tempCharArr, NUM_CONTROLS + 1);
+      
+      // Convert ASCII to ints and store in inputIntArr
+      for (int i = 0 ; i < NUM_CONTROLS ; i++){
+          inputIntArr[i] = tempCharArr[i] - 48;
+      }
     }
 }
 
+// Takes in int motorSpeed and maps it to a PWM value.
 int mapMotorSpeedToPWM(int motorSpeed){
     switch (abs(motorSpeed)){
-        case 0: return motorSpeedLevel0;
-        case 1: return motorSpeedLevel1;
-        case 2: return motorSpeedLevel2;
-        case 3: return motorSpeedLevel3;
+        case 0: return MOTOR_SPEED_LEVEL_0;
+        case 1: return MOTOR_SPEED_LEVEL_1;
+        case 2: return MOTOR_SPEED_LEVEL_2;
+        case 3: return MOTOR_SPEED_LEVEL_3;
     }
 }
 
+// Set speed of left motor.
 void setLeftMotor(int motorSpeed){
     motorSpeed = motorSpeed - 4;
-    analogWrite(leftMotorSpeed, mapMotorSpeedToPWM(motorSpeed));
+    Serial.println("leftMotorSpeed: "+motorSpeed);
+    analogWrite(LEFT_MOTOR_SPEED_PIN, mapMotorSpeedToPWM(motorSpeed));
 
     if (motorSpeed == 0){
-        analogWrite(leftMotorOutputA, LOW);
-        analogWrite(leftMotorOutputB, LOW);
+        digitalWrite(LEFT_MOTOR_A_PIN, LOW);
+        digitalWrite(LEFT_MOTOR_B_PIN, LOW);
     } else if (motorSpeed > 0){
-        analogWrite(leftMotorOutputA, HIGH);
-        analogWrite(leftMotorOutputB, LOW);
+        digitalWrite(LEFT_MOTOR_A_PIN, HIGH);
+        digitalWrite(LEFT_MOTOR_B_PIN, LOW);
     } else {
-        analogWrite(leftMotorOutputA, LOW);
-        analogWrite(leftMotorOutputB, HIGH);
+        digitalWrite(LEFT_MOTOR_A_PIN, LOW);
+        digitalWrite(LEFT_MOTOR_B_PIN, HIGH);
     }
 }
+
+// Set speed of right motor.
 void setRightMotor(int motorSpeed){
     motorSpeed = motorSpeed - 4;
-    analogWrite(rightMotorSpeed, mapMotorSpeedToPWM(motorSpeed));
+    Serial.println("rightMotorSpeed: "+motorSpeed);
+    analogWrite(RIGHT_MOTOR_SPEED_PIN, mapMotorSpeedToPWM(motorSpeed));
 
     if (motorSpeed == 0){
-        analogWrite(rightMotorOutputA, LOW);
-        analogWrite(rightMotorOutputB, LOW);
+        digitalWrite(RIGHT_MOTOR_A_PIN, LOW);
+        digitalWrite(RIGHT_MOTOR_B_PIN, LOW);
     } else if (motorSpeed > 0){
-        analogWrite(rightMotorOutputA, HIGH);
-        analogWrite(rightMotorOutputB, LOW);
+        digitalWrite(RIGHT_MOTOR_A_PIN, HIGH);
+        digitalWrite(RIGHT_MOTOR_B_PIN, LOW);
     } else {
-        analogWrite(rightMotorOutputA, LOW);
-        analogWrite(rightMotorOutputB, HIGH);
+        digitalWrite(RIGHT_MOTOR_A_PIN, LOW);
+        digitalWrite(RIGHT_MOTOR_B_PIN, HIGH);
     }
 }
 
+// Set state of arms by delegated to retractArms and deployArms
 void setArmsState(int armState){
     bool boolArmState = (armState == 1);
 
@@ -198,34 +228,35 @@ void setArmsState(int armState){
 }
 
 void deployArms(){
-    analogWrite(leftArmSpeed, armSpeed);
-    analogWrite(rightArmSpeed, armSpeed);
+    analogWrite(LEFT_ARM_SPEED_PIN, ARM_SPEED);
+    analogWrite(RIGHT_ARM_SPEED_PIN, ARM_SPEED);
 
     // reset encoder values
-    leftEncoderValue = 0;
-    rightEncoderValue = 0;
+    leftArmEncoderValue = 0;
+    rightArmEncoderValue = 0;
 
-    digitalWrite(leftArmMotorOutputA, LOW);
-    digitalWrite(leftArmMotorOutputB, HIGH);
-    digitalWrite(rightArmMotorOutputA, LOW);
-    digitalWrite(rightArmMotorOutputB, HIGH);
+    digitalWrite(LEFT_ARM_MOTOR_A_PIN, LOW);
+    digitalWrite(LEFT_ARM_MOTOR_B_PIN, HIGH);
+    digitalWrite(RIGHT_ARM_MOTOR_A_PIN, LOW);
+    digitalWrite(RIGHT_ARM_MOTOR_B_PIN, HIGH);
 }
 
 void retractArms(){
-    analogWrite(leftArmSpeed, armSpeed);
-    analogWrite(rightArmSpeed, armSpeed);
+    analogWrite(LEFT_ARM_SPEED_PIN, ARM_SPEED);
+    analogWrite(RIGHT_ARM_SPEED_PIN, ARM_SPEED);
 
     // reset encoder values
-    leftEncoderValue = armThreshold;
-    rightEncoderValue = armThreshold;
+    leftArmEncoderValue = ARM_DEPLOYMENT_THRESHOLD_VAL;
+    rightArmEncoderValue = ARM_DEPLOYMENT_THRESHOLD_VAL;
 
-    digitalWrite(leftArmMotorOutputA, HIGH);
-    digitalWrite(leftArmMotorOutputB, LOW);
-    digitalWrite(rightArmMotorOutputA, HIGH);
-    digitalWrite(rightArmMotorOutputB, LOW);
+    digitalWrite(LEFT_ARM_MOTOR_A_PIN, HIGH);
+    digitalWrite(LEFT_ARM_MOTOR_B_PIN, LOW);
+    digitalWrite(RIGHT_ARM_MOTOR_A_PIN, HIGH);
+    digitalWrite(RIGHT_ARM_MOTOR_B_PIN, LOW);
 }
 
-void stopArmThresholdCheck(){
+// Check if arm movement has reached threshold yet.
+void stopARM_DEPLOYMENT_THRESHOLD_VALCheck(){
     /*
     if (encoderValue > 800){
         PORTB &= B11111100; // lookup bit manipulation. PORTB maps to 13-8 so this
@@ -235,20 +266,20 @@ void stopArmThresholdCheck(){
 
     // above code snippet is faster version of digitalWrite.
 
-    if (leftEncoderValue < 0 || leftEncoderValue > armThreshold){
-        digitalWrite(leftArmMotorOutputA, LOW);
-        digitalWrite(leftArmMotorOutputB, LOW);
-        if (leftEncoderValue < 0){
+    if (leftArmEncoderValue < 0 || leftArmEncoderValue > ARM_DEPLOYMENT_THRESHOLD_VAL){
+        digitalWrite(LEFT_ARM_MOTOR_A_PIN, LOW);
+        digitalWrite(LEFT_ARM_MOTOR_B_PIN, LOW);
+        if (leftArmEncoderValue < 0){
             armDeployed = false;
         } else {
             armDeployed = true;
         }
     }
 
-    if (rightEncoderValue < 0 || rightEncoderValue > armThreshold){
-        digitalWrite(rightArmMotorOutputA, LOW);
-        digitalWrite(rightArmMotorOutputB, LOW);
-        if (rightEncoderValue < 0){
+    if (rightArmEncoderValue < 0 || rightArmEncoderValue > ARM_DEPLOYMENT_THRESHOLD_VAL){
+        digitalWrite(RIGHT_ARM_MOTOR_A_PIN, LOW);
+        digitalWrite(RIGHT_ARM_MOTOR_B_PIN, LOW);
+        if (rightArmEncoderValue < 0){
             armDeployed = false;
         } else {
             armDeployed = true;
@@ -257,47 +288,47 @@ void stopArmThresholdCheck(){
 }
 
 void leftEncoderEvent(){
-    int encodeA = digitalRead(leftEncoderInputA);
-    int encodeB = digitalRead(leftEncoderInputB);
+    int encodeA = digitalRead(LEFT_ENCODER_A_PIN);
+    int encodeB = digitalRead(LEFT_ENCODER_B_PIN);
 
     // Magic code that keeps track of how much the motor has spinned
     if (encodeA != 0){
         if (encodeB == 0){
-            leftEncoderValue++;
+            leftArmEncoderValue++;
         } else {
-            leftEncoderValue--;
+            leftArmEncoderValue--;
         }
     } else {
         if (encodeB == 0) {
-            leftEncoderValue--;
+            leftArmEncoderValue--;
         } else {
-            leftEncoderValue++;
+            leftArmEncoderValue++;
         }
     }
 }
 
 void rightEncoderEvent(){
-    int encodeA = digitalRead(rightEncoderInputA);
-    int encodeB = digitalRead(rightEncoderInputB);
+    int encodeA = digitalRead(RIGHT_ENCODER_A_PIN);
+    int encodeB = digitalRead(RIGHT_ENCODER_B_PIN);
 
     // Magic code that keeps track of how much the motor has spinned
     if (encodeA != 0){
         if (encodeB == 0){
-            rightEncoderValue++;
+            rightArmEncoderValue++;
         } else {
-            rightEncoderValue--;
+            rightArmEncoderValue--;
         }
     } else {
         if (encodeB == 0) {
-            rightEncoderValue--;
+            rightArmEncoderValue--;
         } else {
-            rightEncoderValue++;
+            rightArmEncoderValue++;
         }
     }
 }
 
 int mapServoStateToPosition(int state){
-    return 10*(state-5);
+    return 10*(state-4);
 }
 
 void setXServo(int dx){
@@ -316,7 +347,7 @@ void setYServo(int dy){
     if (dy > 0){
         // move down
         yServoPosition = min(180, yServoPosition+dy);
-    } else if (dx < 0){
+    } else if (dy < 0){
         // move up
         yServoPosition = max(15, yServoPosition+dy);
     }
@@ -325,11 +356,11 @@ void setYServo(int dy){
 
 void setServoPWM(int xServoPosition, int yServoPosition){
     pwm.setPWM(0, 0, angleToPulse(xServoPosition));
-    pwm.setPWM(0, 0, angleToPulse(yServoPosition));
+    pwm.setPWM(1, 0, angleToPulse(yServoPosition));
 }
 
 int angleToPulse(int angle){
-    int pulse = map(angle, 0, 180, SERVOMIN, SERVOMAX); // map angle of 0 to 180
+    int pulse = map(angle, 0, 180, SERVO_MIN, SERVO_MAX); // map angle of 0 to 180
                                                         // to Servo min and
                                                         // Servo max
 
