@@ -124,11 +124,6 @@ void loop() {
 
     convertSerialStringToIntArray();
 
-    for (int i = 0 ; i < 5 ; i++){
-      Serial.print(inputIntArr[i]);
-    }
-    Serial.println("");
-
     // Set motor and servo values based on serial input.
     setLeftMotor(inputIntArr[LEFT_DRIVE_STATE_INDEX]);
     Serial.print("leftDriveStateIndex: ");
@@ -181,7 +176,6 @@ int mapMotorSpeedToPWM(int motorSpeed){
 // Set speed of left motor.
 void setLeftMotor(int motorSpeed){
     motorSpeed = motorSpeed - 4;
-    Serial.println("leftMotorSpeed: "+motorSpeed);
     analogWrite(LEFT_MOTOR_SPEED_PIN, mapMotorSpeedToPWM(motorSpeed));
 
     if (motorSpeed == 0){
@@ -199,7 +193,6 @@ void setLeftMotor(int motorSpeed){
 // Set speed of right motor.
 void setRightMotor(int motorSpeed){
     motorSpeed = motorSpeed - 4;
-    Serial.println("rightMotorSpeed: "+motorSpeed);
     analogWrite(RIGHT_MOTOR_SPEED_PIN, mapMotorSpeedToPWM(motorSpeed));
 
     if (motorSpeed == 0){
