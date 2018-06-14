@@ -35,7 +35,7 @@
 #define ARM_SPEED 100 // 50-255 is range of usable values
 
 // Amount that arms should rotate for deployment (unknown units).
-#define ARM_DEPLOYMENT_THRESHOLD_VAL 800 // TODO find magic threshold for deployment
+#define ARM_DEPLOYMENT_THRESHOLD_VAL 1000 // TODO find magic threshold for deployment
 
 // Offset for motorSpeed serial input.
 #define INPUT_OFFSET 4 // serial input for motor speed is offset by 4
@@ -67,6 +67,12 @@ int xServoPosition, yServoPosition;
 
 // Keeps track of status of arm deployment.
 bool armDeployed = false;
+
+// Keep track of whether or not to keep track of encoder value.
+bool trackEncoder = false;
+
+// Keep track of arm deployment status.
+bool armDeploymentInProgress = false;
 
 // Keeps track of encoder values of left and right arms.
 volatile long leftArmEncoderValue;
@@ -126,18 +132,17 @@ void loop() {
 
     // Set motor and servo values based on serial input.
     setLeftMotor(inputIntArr[LEFT_DRIVE_STATE_INDEX]);
-    Serial.print("leftDriveStateIndex: ");
-    Serial.println(inputIntArr[LEFT_DRIVE_STATE_INDEX]);
     setRightMotor(inputIntArr[RIGHT_DRIVE_STATE_INDEX]);
 
     setXServo(inputIntArr[PAN_SERVO_STATE_INDEX]);
     setYServo(inputIntArr[TILT_SERVO_STATE_INDEX]);
     setServoPWM(xServoPosition, yServoPosition);
 
-    setArmsState(inputIntArr[DEPLOY_STATE_INDEX]);
+    bool inputDeployState = (inputIntArr[DEPLOY_STATE_INDEX] == 1);
+    setArmsState(inputDeployState);
 
     // Check if arms have reached deployment threshold.
-    stopARM_DEPLOYMENT_THRESHOLD_VALCheck();
+    //stopARM_DEPLOYMENT_THRESHOLD_VALCheck();
 }
 
 void resetInputIntArr(int * inputIntArr){
@@ -208,11 +213,14 @@ void setRightMotor(int motorSpeed){
 }
 
 // Set state of arms by delegated to retractArms and deployArms
-void setArmsState(int armState){
-    bool boolArmState = (armState == 1);
-
-    if(boolArmState != armDeployed){
-        if(boolArmState){
+void setArmsState(bool armState){
+    if (!armDeploymentInProgress){
+      return;
+    } else {
+      armDeploymentInProgress = true;
+    }
+    if(armState != armDeployed){
+        if(armDeployed){
             retractArms();
         } else {
             deployArms();
@@ -221,6 +229,8 @@ void setArmsState(int armState){
 }
 
 void deployArms(){
+    trackEncoder = true;
+    Serial.println("deployArms");
     analogWrite(LEFT_ARM_SPEED_PIN, ARM_SPEED);
     analogWrite(RIGHT_ARM_SPEED_PIN, ARM_SPEED);
 
@@ -230,11 +240,13 @@ void deployArms(){
 
     digitalWrite(LEFT_ARM_MOTOR_A_PIN, LOW);
     digitalWrite(LEFT_ARM_MOTOR_B_PIN, HIGH);
-    digitalWrite(RIGHT_ARM_MOTOR_A_PIN, LOW);
-    digitalWrite(RIGHT_ARM_MOTOR_B_PIN, HIGH);
+    //digitalWrite(RIGHT_ARM_MOTOR_A_PIN, LOW);
+    //digitalWrite(RIGHT_ARM_MOTOR_B_PIN, HIGH);
 }
 
 void retractArms(){
+    Serial.println("retractArms");
+    trackEncoder = true;
     analogWrite(LEFT_ARM_SPEED_PIN, ARM_SPEED);
     analogWrite(RIGHT_ARM_SPEED_PIN, ARM_SPEED);
 
@@ -244,12 +256,13 @@ void retractArms(){
 
     digitalWrite(LEFT_ARM_MOTOR_A_PIN, HIGH);
     digitalWrite(LEFT_ARM_MOTOR_B_PIN, LOW);
-    digitalWrite(RIGHT_ARM_MOTOR_A_PIN, HIGH);
-    digitalWrite(RIGHT_ARM_MOTOR_B_PIN, LOW);
+    //digitalWrite(RIGHT_ARM_MOTOR_A_PIN, HIGH);
+    //digitalWrite(RIGHT_ARM_MOTOR_B_PIN, LOW);
 }
 
 // Check if arm movement has reached threshold yet.
 void stopARM_DEPLOYMENT_THRESHOLD_VALCheck(){
+    static int numArmsDeployed = 0;
     /*
     if (encoderValue > 800){
         PORTB &= B11111100; // lookup bit manipulation. PORTB maps to 13-8 so this
@@ -260,47 +273,65 @@ void stopARM_DEPLOYMENT_THRESHOLD_VALCheck(){
     // above code snippet is faster version of digitalWrite.
 
     if (leftArmEncoderValue < 0 || leftArmEncoderValue > ARM_DEPLOYMENT_THRESHOLD_VAL){
+        Serial.println("leftArmOff");
         digitalWrite(LEFT_ARM_MOTOR_A_PIN, LOW);
         digitalWrite(LEFT_ARM_MOTOR_B_PIN, LOW);
         if (leftArmEncoderValue < 0){
+            numArmsDeployed++;
             armDeployed = false;
         } else {
+            numArmsDeployed++;
             armDeployed = true;
         }
     }
 
     if (rightArmEncoderValue < 0 || rightArmEncoderValue > ARM_DEPLOYMENT_THRESHOLD_VAL){
+        Serial.println("rightArmOff");
         digitalWrite(RIGHT_ARM_MOTOR_A_PIN, LOW);
         digitalWrite(RIGHT_ARM_MOTOR_B_PIN, LOW);
         if (rightArmEncoderValue < 0){
+            numArmsDeployed++;
             armDeployed = false;
         } else {
+            numArmsDeployed++;
             armDeployed = true;
         }
+    }
+
+    if (numArmsDeployed == 2){
+      numArmsDeployed = 0;
+      armDeploymentInProgress = false;
     }
 }
 
 void leftEncoderEvent(){
+    if (!trackEncoder) return;
+    Serial.print("leftEncoderValue: ");
+    Serial.println(leftArmEncoderValue);
     int encodeA = digitalRead(LEFT_ENCODER_A_PIN);
     int encodeB = digitalRead(LEFT_ENCODER_B_PIN);
-
+    
     // Magic code that keeps track of how much the motor has spinned
-    if (encodeA != 0){
-        if (encodeB == 0){
+    if (encodeA == HIGH){
+        if (encodeB == LOW){
             leftArmEncoderValue++;
         } else {
             leftArmEncoderValue--;
         }
     } else {
-        if (encodeB == 0) {
+        if (encodeB == LOW) {
             leftArmEncoderValue--;
         } else {
             leftArmEncoderValue++;
         }
     }
+    stopARM_DEPLOYMENT_THRESHOLD_VALCheck();
 }
 
 void rightEncoderEvent(){
+    if (!trackEncoder) return;
+    Serial.print("rightEncoderValue: ");
+    Serial.println(rightArmEncoderValue);
     int encodeA = digitalRead(RIGHT_ENCODER_A_PIN);
     int encodeB = digitalRead(RIGHT_ENCODER_B_PIN);
 
@@ -318,6 +349,7 @@ void rightEncoderEvent(){
             rightArmEncoderValue++;
         }
     }
+    stopARM_DEPLOYMENT_THRESHOLD_VALCheck();
 }
 
 int mapServoStateToPosition(int state){
