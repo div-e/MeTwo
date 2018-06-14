@@ -131,7 +131,7 @@ void convertSerialStringToIntArray(){
     // Convert ASCII to ints
     for (int i = 0 ; i < 5 ; i++){
         inputIntArr[i] = tempCharArr[i] - 48;
-        
+
         Serial.print("\ninputArrInt[");
         Serial.print(i);
         Serial.print("]: ");
@@ -141,7 +141,7 @@ void convertSerialStringToIntArray(){
         Serial.print(i);
         Serial.print("]: ");
         Serial.println(tempCharArr[i]);
-        
+
     }
 }
 
