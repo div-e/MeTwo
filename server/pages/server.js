@@ -3,6 +3,10 @@
 var SerialPort = require('serialport');
 var port = new SerialPort('/dev/ttyACM0', {
   baudRate: 9600
+  }, function(err) {
+  if(err) {
+  	console.log('Could not find /dev/ttyACM0');
+  }
 });
 
 const WebSocket = require('ws');

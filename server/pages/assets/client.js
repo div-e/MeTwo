@@ -107,10 +107,19 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 
   var deployStatus = 0;
   document.getElementById("deployer").onclick = function() {
+	joystick.baseEl.style.display = "none";
+	joystick.destroy();
+    document.getElementById("deployer").style.color = "red";
     if (deployStatus == 0) {
       deployStatus = 1;
     } else {
       deployStatus = 0;
+    }
+  }
+  
+  document.onkeypress = function (event) {
+    if (event.keyCode == 32) {
+      //document.getElementById("deployer").style.backgroundColor = "gray";
     }
   }
 
@@ -134,6 +143,16 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     if (event.keyCode == 68) {
       d = true;
     }
+    
+    /* deploy button */
+    /*if (event.keyCode == 32) {
+      document.getElementById("deployer").style.backgroundColor = "gray";
+      if (deployStatus == 0) {
+	deployStatus = 1;
+      } else {
+	deployStatus = 0;
+      }
+    }*/
   }
 
   // Set wasd booleans to false on key up.
@@ -150,6 +169,11 @@ if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
     if (event.keyCode == 68) {
       d = false;
     }
+   
+   /* deploy button */ 
+   /*if (event.keyCode == 32) {
+      document.getElementById("deployer").style.backgroundColor = "lightGray";
+   }*/
   }
 
 
