@@ -1,64 +1,39 @@
 ## Description
-This repository contains the remote control system of the robot.
+This repository contains the WIP code for the second iteration of MeTwo. 
+
+MeTwo is a remote, wifi-controlled robot, that sends back webcam data to its user. The user can connect to the robot by asking for the homepage of the robot's server. The homepage will automatically connect the webcam data from the robot to its background image so the user can see what the robot is seeing. Additionally, the user can control the robot by joystick controls on the screen, WASD keys if on desktop, and a deploy button to deploy the robot's arms. 
+
+The project requires an Arduino Mega and Dragonboard 410c. The Arduino controls the robot's actuators through serial inputs from the Dragonboard 410c. The Dragonboard connects to the internet (and eventually receives the data from the client), serves the webpage, and feeds webcam data. 
 
 ## Structure
 - server/ contains the server side code written in javascript.
-- dragon/ contains the driver program for dragon board.
-- pi/ contains the driver program for pi
+- arduino/ contains the drivingControls that listens for instruction on serial connection written in Arduino. 
 
-## Usage
-### 1. Clone this repo
-
-### 2. Start the websocket server
-- make sure you have node.js, express, ws installed
-- cd to server/pages
-- node server
-
-### 3. Open browser
-- localhost:3000
+## Code Usage (Attempt after robot has been built and connected to boards)
+### 1. Clone this repo to the Dragonboard 410c
  
-### 4. Build the robot code
-- cd to dragon/
-- mkdir build
-- cd build
-- cmake .. 
-- make
-- cd ..
+### 2. Load the Arduino Code
+- Install Arduino IDE on Draonboard
+- Upload drivingControls.ino to the Mega
 
+### 3. Start the websocket server
+- in server/ 'npm install' to obtain 'serialport', 'ws', and 'express' node packages. 
+- node server.js
+- Make sure Mega is connected to USB port 0 of Dragonboard for serial output from the server. Webcam connected to port 1. 
 
-### 5. Run robot code
-- in dragon/, sudo ./dragon ip
+### 4. On a client on the same intranet (TODO: make it so client can be on a different router)
+- Our code assumes that Dragonboard has local ip 192.168.0.201, so client will need to hit 192.168.0.201:3000 in their browser. 
 
-### 6. Navigate to browser and use WASD, IKJL to control robot motors. 
+### 5. Drive using WASD (if on desktop) or (right or left?) joystick (if on mobile)
 
-### 7. Data from browser is sent to server, which can be seen from the terminal
-in which you ran node server.
+### 6. Look around using on-screen joystick (drag using mouse click+drag).
+
+### 7. Deploy and retract arms using on-screen button or spacebar? 
+
 
 ## TODO
 - Authenticate connections
-- Auto-recover from exceptions
-- Better UI
-- Fix paging bug in the streaming server
-- Use libjpeg-turbo to compress image
-- Enable more threads on the robot
+- Enable public access to obtain controls (vs intranet)
 - Auto wifi probing
+- Distance sensors to provide user feedback of falling dangers (i.e. when to deploy arms)
 
-
-## compile dependency
-cmake, swig, pkgconfig, pthreads
-
-## prepare environment
-'''
-./bootstrap [with cmake configure option here]
-'''
-
-## compile 
-'''
-cd dragon
-mkdir build
-cd build
-cmake ..
-'''
-
-## run
-sudo LD_LIBRARY_PATH=/usr/local/lib [command]
