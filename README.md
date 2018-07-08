@@ -9,6 +9,17 @@ The project requires an Arduino Mega and Dragonboard 410c. The Arduino controls 
 - server/ contains the server side code written in javascript.
 - arduino/ contains the drivingControls that listens for instruction on serial connection written in Arduino. 
 
+## Hardware Set up 
+### 1. Connect Router to Ethernet Port
+### 2. Connect Arduino to Port 0 of Dragonboard
+### 3. Connect Webcam to Port 1 of Dragonboard
+### 4. Connect 11.1V Battery to Robot
+### 5. SSH into Dragonboard to begin server (see Code Usage)
+- Make sure Arduino Code is uploaded to Arduino Mega. 
+- Make sure wires are connected as specified in code. 
+- Test with robot elevated. 
+
+
 ## Code Usage (Attempt after robot has been built and connected to boards)
 ### 1. Clone this repo to the Dragonboard 410c
  
@@ -36,4 +47,6 @@ The project requires an Arduino Mega and Dragonboard 410c. The Arduino controls 
 - Enable public access to obtain controls (vs intranet)
 - Auto wifi probing
 - Distance sensors to provide user feedback of falling dangers (i.e. when to deploy arms)
+
+
 
